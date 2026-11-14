@@ -1,0 +1,38 @@
+package com.example.be.dto;
+
+import lombok.Builder;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+public class HoaDonDTO {
+    private Long id;
+    private String maHoaDon;
+    private String nguoiTao;
+    private String tenKhachHang;
+    private String sdtKhachHang;
+    private Integer soLuong;
+    private LocalDateTime ngayTao;
+    private LocalDateTime ngayThanhToan;
+    private BigDecimal tongTien;
+    private String loaiHoaDon;
+    private Integer trangThai;
+    private String maNhanVien;
+    private String email;
+    private String tenNguoiNhan;
+    private String sdtNguoiNhan;
+    private String diaChiGiao;
+    private String ghiChu;
+    private BigDecimal tienGiam;
+    private BigDecimal phiShip;
+    private Integer soLanSuaThongTin;
+    // Thông tin phiếu giảm giá
+    private String tenVoucher;
+    private String maVoucher;
+    private BigDecimal giaTriGiam;
+    private String loaiGiamGia;
+    private java.util.List<java.util.Map<String, Object>> chiTietList;
+}

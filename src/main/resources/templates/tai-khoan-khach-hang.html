@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý tài khoản khách hàng | VShoes</title>
+    <!-- Nhúng CSS dùng chung -->
+    <link rel="stylesheet" href="/css/admin-common.css?v=2.1">
+    <link rel="stylesheet" href="/css/sidebar.css?v=99">
+    <link rel="stylesheet" href="/css/header.css?v=99">
+    <!-- Nhúng CSS riêng của trang khách hàng -->
+    <link rel="stylesheet" href="/css/khach-hang.css?v=99">
+    <!-- SweetAlert2 CSS & Admin Common JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/admin-common.js?v=2.1"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Nhúng Sidebar dùng chung -->
+        <div th:replace="~{sidebar/sidebar :: sidebar}"></div>
+
+        <!-- NỘI DUNG CHÍNH CỦA TRANG QUẢN LÝ KHÁCH HÀNG -->
+        <main class="main-content">
+            <!-- Nhúng Header dùng chung -->
+            <div th:replace="~{header/header :: header}"></div>
+            <!-- TIÊU ĐỀ MÀN HÌNH -->
+            <div class="screen-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 20px; font-weight: 700; color: #1e293b; margin: 0;">Quản lý tài khoản khách hàng</h2>
+            </div>
+
+            <!-- CARD 1: BỘ LỌC TÌM KIẾM -->
+            <div class="customer-container">
+                <!-- PANEL 1: DANH SÁCH KHÁCH HÀNG (LISTING PANEL) -->
+                <div id="list-panel" class="tab-panel active">
+                    <div class="filter-section-card">
+                <div class="filter-header">
+                    <span class="filter-section-title mb-0">Bộ lọc tìm kiếm</span>
+                    <div class="status-filter-wrapper">
+                        <span class="fi-label" style="font-size: 13px;">Trạng thái</span>
+                        <div class="status-options">
+                            <button type="button" class="status-btn active"
+                                onclick="toggleStatusFilter(this, 'all')">Tất cả</button>
+                            <button type="button" class="status-btn" onclick="toggleStatusFilter(this, '1')">Hoạt
+                                động</button>
+                            <button type="button" class="status-btn" onclick="toggleStatusFilter(this, '0')">Ngừng hoạt
+                                động</button>
+                        </div>
+                        <button class="fi-reset-btn" onclick="resetFilters()" title="Làm mới bộ lọc">
+                            <i data-lucide="refresh-cw"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-grid">
+                    <!-- Tìm kiếm Tên/SĐT/Email -->
+                    <div class="fi-col">
+                        <label class="fi-label" for="search-input">Họ và tên, sđt, email</label>
+                        <div class="fi-search-wrap">
+                            <i class="bi bi-search fi-search-icon" style="top: 11px;"></i>
+                            <input type="text" id="search-input" class="fi-input"
+                                placeholder="Nhập họ và tên, sđt, email" oninput="applyFilters()">
+                        </div>
+                    </div>
+
+                    <!-- Lọc Giới tính -->
+                    <div class="fi-col">
+                        <label class="fi-label">Giới tính</label>
+                        <div class="gender-row" style="padding: 6px 0;">
+                            <label class="gender-checkbox">
+                                <input type="checkbox" id="gender-nam" value="Nam" onchange="applyFilters()"> Nam
+                            </label>
+                            <label class="gender-checkbox">
+                                <input type="checkbox" id="gender-nu" value="Nữ" onchange="applyFilters()"> Nữ
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Lọc Ngày sinh -->
+                    <div class="fi-col">
+                        <label class="fi-label" for="dob-input">Ngày sinh</label>
+                        <input type="date" id="dob-input" class="fi-input" placeholder="dd-MM-yyyy"
+                            onchange="applyFilters()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW CHỨA CÁC NÚT THAO TÁC XUẤT/NHẬP/THÊM -->
+            <div class="action-row" style="display: flex; gap: 8px; align-items: center;">
+                <button class="btn-import-excel" title="Nhập Excel" onclick="triggerImportExcel()">
+                    <i data-lucide="file-up"></i> Nhập Excel
+                </button>
+                <button class="btn-export-excel" title="Xuất Excel" onclick="triggerExportExcel()">
+                    <i data-lucide="file-spreadsheet"></i> Xuất Excel
+                </button>
+                <button class="btn-admin-outline" title="Tải file mẫu / PDF" onclick="triggerPdfDownload()">
+                    <i data-lucide="file-text"></i> File mẫu
+                </button>
+                <button class="btn-primary-action" onclick="openAddCustomerModal()">
+                    <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+                    Thêm Khách hàng
+                </button>
+            </div>
+
+            <!-- CARD 2: DANH SÁCH KHÁCH HÀNG -->
+            <div class="customer-card">
+                <div class="card-title-table">Danh sách khách hàng</div>
+
+                <div class="custom-table-container">
+                    <table class="customer-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 35px; text-align: center;">#</th>
+                                <th style="width: 45px; text-align: center;">Ảnh</th>
+                                <th style="width: 80px;">Mã KH</th>
+                                <th style="min-width: 100px;">Họ tên</th>
+                                <th style="width: 85px;">Ngày sinh</th>
+                                <th style="width: 130px;">Email</th>
+                                <th style="width: 95px;">SĐT</th>
+                                <th style="min-width: 130px;">Địa chỉ</th>
+                                <th style="width: 110px; text-align: center;">Trạng thái</th>
+                                <th style="width: 90px; text-align: center;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customer-table-body">
+                            <!-- Dữ liệu được render động bằng JavaScript bên dưới -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- BẢNG PHÂN TRANG & THÔNG TIN TỔNG HỢP -->
+                <div class="table-footer">
+                    <div class="total-count" id="total-count-label">
+                        Tổng 0 khách hàng
+                    </div>
+                    <div class="pagination-nav">
+                        <button class="page-btn disabled" id="prev-page-btn" onclick="changePage(-1)">
+                            <i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i>
+                        </button>
+                        <div id="page-numbers-container" style="display: flex; gap: 6px;">
+                            <button class="page-btn active">1</button>
+                        </div>
+                        <button class="page-btn disabled" id="next-page-btn" onclick="changePage(1)">
+                            <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
+                        </button>
+                    </div>
+                    <div class="page-size-selector">
+                        <select class="page-size-select" id="page-size-select" onchange="changePageSize(this.value)">
+                            <option value="10">10 / page</option>
+                            <option value="20">20 / page</option>
+                            <option value="50">50 / page</option>
+                        </select>
+                    </div>
+                </div>
+                    </div>
+                </div> <!-- End list-panel -->
+
+                <!-- PANEL 2: THÊM MỚI / CHỈNH SỬA KHÁCH HÀNG (FORM PANEL) -->
+                <div id="form-panel" class="tab-panel">
+                    <button class="back-link" onclick="closeCustomerModal()">
+                        <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+                        Quay lại danh sách
+                    </button>
+                    
+                    <div class="form-card">
+                        <div class="form-title-row">
+                            <span id="customer-modal-title" class="form-title">Thêm Khách Hàng Mới</span>
+                        </div>
+                        <form id="customer-form" onsubmit="saveCustomer(event)">
+                <input type="hidden" id="cust-id">
+                <div class="modal-grid">
+                    <div class="form-group">
+                        <label for="cust-code">Mã khách hàng</label>
+                        <input type="text" id="cust-code" class="input-control" readonly placeholder="Mã tự sinh..." style="background-color: #e2e8f0; cursor: not-allowed; font-weight: 600; color: #475569;">
+                    </div>
+                    <div class="form-group">
+                        <label for="cust-name">Họ và tên <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="cust-name" class="input-control" required placeholder="Nhập họ và tên">
+                    </div>
+                    <div class="form-group">
+                        <label for="cust-phone">Số điện thoại <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="cust-phone" class="input-control" required
+                            placeholder="Nhập số điện thoại">
+                    </div>
+                    <div class="form-group">
+                        <label for="cust-email">Email</label>
+                        <input type="email" id="cust-email" class="input-control" placeholder="Nhập địa chỉ email">
+                    </div>
+                    <div class="form-group">
+                        <label for="cust-gender">Giới tính <span style="color: #ef4444;">*</span></label>
+                        <select id="cust-gender" class="input-control" required>
+                            <option value="true">Nam</option>
+                            <option value="false">Nữ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cust-dob">Ngày sinh</label>
+                        <input type="date" id="cust-dob" class="input-control">
+                    </div>
+                    <div class="form-group" id="status-group">
+                        <label for="cust-status">Trạng thái</label>
+                        <select id="cust-status" class="input-control">
+                            <option value="1">Hoạt động</option>
+                            <option value="0">Ngừng hoạt động</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Địa chỉ mặc định ban đầu (Chỉ cho phép nhập khi Thêm mới) -->
+                <div id="initial-address-section">
+                    <div class="section-divider"></div>
+                    <span class="section-title">Địa chỉ mặc định ban đầu</span>
+                    <div class="modal-grid" style="margin-top: 14px;">
+                        <div class="form-group">
+                            <label for="addr-province">Tỉnh / Thành phố</label>
+                            <select id="addr-province" class="input-control" onchange="loadDistricts(this, 'addr-district', 'addr-ward')">
+                                <option value="">Chọn Tỉnh / Thành phố</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="addr-district">Quận / Huyện</label>
+                            <select id="addr-district" class="input-control" disabled onchange="loadWards(this, 'addr-ward')">
+                                <option value="">Chọn Quận / Huyện</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="addr-ward">Phường / Xã</label>
+                            <select id="addr-ward" class="input-control" disabled>
+                                <option value="">Chọn Phường / Xã</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label for="addr-detail">Địa chỉ chi tiết</label>
+                            <input type="text" id="addr-detail" class="input-control"
+                                placeholder="Số nhà, ngõ, tên đường...">
+                        </div>
+                        <div class="form-group">
+                            <label for="addr-type">Loại địa chỉ</label>
+                            <select id="addr-type" class="input-control">
+                                <option value="Nhà riêng">Nhà riêng</option>
+                                <option value="Văn phòng">Văn phòng</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeCustomerModal()">Hủy</button>
+                    <button type="submit" class="btn-primary-action">Lưu thông tin</button>
+                </div>
+            </form>
+                    </div> <!-- End form-card -->
+                </div> <!-- End form-panel -->
+            </div> <!-- End customer-container -->
+        </main>
+    </div>
+
+    <!-- HỘP THOẠI CHI TIẾT KHÁCH HÀNG & QUẢN LÝ ĐỊA CHỈ -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <span class="modal-title">Thông Tin Chi Tiết Khách Hàng</span>
+                <button class="close-btn" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="detail-layout">
+                <!-- Thẻ Thông tin cá nhân -->
+                <div class="detail-card-panel">
+                    <div class="detail-avatar-container">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #e2e8f0;">
+                            <img id="detail-avatar" src="" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=KH&background=f1f5f9&color=64748b&size=128'"/>
+                        </div>
+                        <span id="detail-name" class="detail-fullname">Nguyễn Văn A</span>
+                        <span id="detail-code" class="detail-code-badge">KH00001</span>
+                    </div>
+                    <div class="detail-info-list">
+                        <div class="detail-info-item">
+                            <span class="info-label">Số điện thoại:</span>
+                            <span id="detail-phone" class="info-val">-</span>
+                        </div>
+                        <div class="detail-info-item">
+                            <span class="info-label">Email:</span>
+                            <span id="detail-email" class="info-val">-</span>
+                        </div>
+                        <div class="detail-info-item">
+                            <span class="info-label">Giới tính:</span>
+                            <span id="detail-gender" class="info-val">-</span>
+                        </div>
+                        <div class="detail-info-item">
+                            <span class="info-label">Ngày sinh:</span>
+                            <span id="detail-dob" class="info-val">-</span>
+                        </div>
+                        <div class="detail-info-item">
+                            <span class="info-label">Trạng thái:</span>
+                            <span id="detail-status" class="info-val">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thẻ Quản lý địa chỉ -->
+                <div class="detail-address-panel">
+                    <div class="address-panel-header">
+                        <span class="panel-subtitle">Sổ địa chỉ liên hệ</span>
+                        <button class="btn-primary-action btn-sm" onclick="openAddAddressSubModal()">
+                            <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                            Thêm địa chỉ mới
+                        </button>
+                    </div>
+                    <div id="address-list-container" class="address-list-scroll">
+                        <!-- Địa chỉ load động ở đây -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeDetailModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HỘP THOẠI THÊM / CẬP NHẬT ĐỊA CHỈ -->
+    <div id="address-modal" class="modal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <span id="address-modal-title" class="modal-title">Địa Chỉ Mới</span>
+                <button class="close-btn" onclick="closeAddressModal()">&times;</button>
+            </div>
+            <form id="address-form" onsubmit="saveAddress(event)">
+                <input type="hidden" id="addr-id">
+                <input type="hidden" id="addr-cust-id">
+
+                <div class="form-group">
+                    <label for="addr-recipient">Tên người nhận <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="addr-recipient" class="input-control" required
+                        placeholder="Họ tên người nhận">
+                </div>
+                <div class="form-group">
+                    <label for="addr-phone-input">Số điện thoại <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="addr-phone-input" class="input-control" required
+                        placeholder="Số điện thoại nhận hàng">
+                </div>
+                <div class="modal-grid">
+                    <div class="form-group">
+                        <label for="addr-prov">Tỉnh/Thành phố <span style="color: #ef4444;">*</span></label>
+                        <select id="addr-prov" class="input-control" required onchange="loadDistricts(this, 'addr-dist', 'addr-w')">
+                            <option value="">Chọn Tỉnh / Thành phố</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addr-dist">Quận/Huyện <span style="color: #ef4444;">*</span></label>
+                        <select id="addr-dist" class="input-control" required disabled onchange="loadWards(this, 'addr-w')">
+                            <option value="">Chọn Quận / Huyện</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addr-w">Phường/Xã <span style="color: #ef4444;">*</span></label>
+                        <select id="addr-w" class="input-control" required disabled>
+                            <option value="">Chọn Phường / Xã</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addr-type-select">Loại địa chỉ</label>
+                        <select id="addr-type-select" class="input-control">
+                            <option value="Nhà riêng">Nhà riêng</option>
+                            <option value="Văn phòng">Văn phòng</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="addr-det">Địa chỉ chi tiết <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="addr-det" class="input-control" required
+                        placeholder="Số nhà, ngõ, đường phố...">
+                </div>
+                <div class="form-group-checkbox">
+                    <label class="gender-checkbox">
+                        <input type="checkbox" id="addr-default"> Đặt làm địa chỉ mặc định
+                    </label>
+                </div>
+                <div class="modal-footer" style="padding-top: 14px;">
+                    <button type="button" class="btn-secondary" onclick="closeAddressModal()">Hủy</button>
+                    <button type="submit" class="btn-primary-action">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Input file ẩn phục vụ việc Import Excel -->
+    <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls"
+        onchange="uploadExcelFile(this)">
+
+    <!-- Script thư viện Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Script kết nối API thực tế và xử lý giao diện -->
+    <script src="/js/customer.js?v=2.1" defer></script>
+</body>
+
+</html>

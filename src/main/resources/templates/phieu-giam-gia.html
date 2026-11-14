@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý phiếu giảm giá | VShoes</title>
+    <!-- Nhúng CSS sidebar & dùng chung -->
+    <link rel="stylesheet" href="/css/admin-common.css?v=2.1">
+    <link rel="stylesheet" href="/css/sidebar.css?v=105">
+    <link rel="stylesheet" href="/css/header.css?v=105">
+    <link rel="stylesheet" href="/css/khach-hang.css?v=105">
+    <!-- Nhúng CSS riêng của trang phiếu giảm giá -->
+    <link rel="stylesheet" href="/css/phieu-giam-gia.css?v=105">
+    <!-- Bootstrap Icons & SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/admin-common.js?v=2.1"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Nhúng Sidebar dùng chung -->
+        <div th:replace="~{sidebar/sidebar :: sidebar}"></div>
+
+        <!-- NỘI DUNG CHÍNH -->
+        <main class="main-content">
+            <!-- Nhúng Header dùng chung -->
+            <div th:replace="~{header/header :: header}"></div>
+            <!-- TIÊU ĐỀ MÀN HÌNH -->
+            <div class="screen-header" style="margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 20px; font-weight: 700; color: #1e293b; margin: 0;">Quản lý phiếu giảm giá</h2>
+                </div>
+            </div>
+
+            <div class="voucher-container">
+
+                <!-- PANEL 1: DANH SÁCH PHIẾU GIẢM GIÁ (LISTING PANEL) -->
+                <div id="list-panel" class="tab-panel active">
+
+                    <!-- BỘ LỌC TÌM KIẾM -->
+                    <div class="filter-section-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <p class="filter-section-title mb-0">Bộ lọc tìm kiếm</p>
+                            <button class="fi-reset-btn" onclick="resetVoucherFilters()" title="Làm mới bộ lọc" style="width: 38px; height: 38px;">
+                                <i data-lucide="refresh-cw" style="width: 18px; height: 18px;"></i>
+                            </button>
+                        </div>
+
+                        <div class="filter-grid" style="grid-template-columns: 2fr 1fr 1fr 2fr; gap: 16px; display: grid;">
+                            <!-- Tên hoặc mã phiếu -->
+                            <div class="fi-col">
+                                <label class="fi-label" for="filter-search">Tên hoặc mã phiếu giảm giá</label>
+                                <div class="fi-search-wrap">
+                                    <i class="bi bi-search fi-search-icon" style="top: 11px;"></i>
+                                    <input type="text" id="filter-search" class="fi-input"
+                                        placeholder="Nhập tên hoặc mã phiếu..." oninput="applyVoucherFilters()">
+                                </div>
+                            </div>
+
+                            <!-- Kiểu giảm -->
+                            <div class="fi-col">
+                                <label class="fi-label" for="filter-loai-giam">Kiểu giảm</label>
+                                <select id="filter-loai-giam" class="fi-input fi-select" onchange="applyVoucherFilters()">
+                                    <option value="">Tất cả</option>
+                                    <option value="Phần trăm">Phần trăm</option>
+                                    <option value="Tiền mặt">Tiền mặt</option>
+                                </select>
+                            </div>
+
+                            <!-- Đối tượng -->
+                            <div class="fi-col">
+                                <label class="fi-label" for="filter-loai-phieu">Đối tượng</label>
+                                <select id="filter-loai-phieu" class="fi-input fi-select" onchange="applyVoucherFilters()">
+                                    <option value="">Tất cả</option>
+                                    <option value="Công khai">Công khai</option>
+                                    <option value="Cá nhân">Cá nhân</option>
+                                </select>
+                            </div>
+
+                            <!-- Khoảng ngày áp dụng -->
+                            <div class="fi-col">
+                                <label class="fi-label">Khoảng ngày áp dụng</label>
+                                <div class="fi-date-range">
+                                    <input type="date" id="filter-start-date" class="fi-input fi-date-input"
+                                        onchange="applyVoucherFilters()">
+                                    <span class="fi-date-dash">—</span>
+                                    <input type="date" id="filter-end-date" class="fi-input fi-date-input"
+                                        onchange="applyVoucherFilters()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CARD DANH SÁCH -->
+                    <div class="customer-card">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <span class="card-title-table" style="margin-bottom: 0;">Danh sách phiếu giảm giá</span>
+                            <div class="action-row" style="margin-bottom: 0; display: flex; gap: 8px;">
+                                <button class="btn-export-excel" onclick="exportVouchersExcel()" title="Xuất Excel">
+                                    <i data-lucide="file-spreadsheet"></i> Xuất Excel
+                                </button>
+                                <button class="btn-primary-action" onclick="openAddVoucherForm()">
+                                    <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+                                    Thêm mới
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Bảng danh sách phiếu -->
+                        <div class="custom-table-container">
+                            <table class="customer-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px; text-align: center;">STT</th>
+                                        <th style="width: 120px; text-align: center;">Mã giảm giá</th>
+                                        <th style="width: 160px; text-align: center;">Tên giảm giá</th>
+                                        <th style="width: 120px; text-align: center;">Loại phiếu</th>
+                                        <th style="width: 120px; text-align: center;">Giá trị giảm</th>
+                                        <th style="width: 150px; text-align: center;">Đơn hàng tối thiểu</th>
+                                        <th style="width: 90px; text-align: center;">Số lượng</th>
+                                        <th style="width: 120px; text-align: center;">Ngày bắt đầu</th>
+                                        <th style="width: 120px; text-align: center;">Ngày kết thúc</th>
+                                        <th style="width: 130px; text-align: center;">Trạng thái</th>
+                                        <th style="width: 100px; text-align: center;">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="voucher-table-body">
+                                    <!-- Load động từ JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Phân trang danh sách phiếu -->
+                        <div class="table-footer">
+                            <div class="total-count" id="voucher-total-count">
+                                Tổng 0 phiếu giảm giá
+                            </div>
+                            <div class="pagination-nav" id="voucher-pagination">
+                                <!-- Nút trang -->
+                            </div>
+                            <div class="page-size-selector">
+                                <select class="page-size-select" id="voucher-page-size"
+                                    onchange="changeVoucherPageSize(this.value)">
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL 2: THÊM MỚI / CHỈNH SỬA PHIẾU GIẢM GIÁ (FORM PANEL) -->
+                <div id="form-panel" class="tab-panel">
+
+                    <button class="back-link" onclick="backToListPanel()">
+                        <i data-lucide="arrow-left" style="width: 20px; height: 20px;"></i>
+                        Quay lại danh sách
+                    </button>
+
+                    <div class="form-card">
+                        <div class="form-title-row">
+                            <span id="form-panel-title" class="form-title">Thêm mới phiếu giảm giá</span>
+                        </div>
+
+                        <form id="voucher-form" onsubmit="saveVoucher(event)">
+                            <input type="hidden" id="voucher-id">
+
+                            <!-- Hàng 1: Mã phiếu & Tên phiếu -->
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label for="voucher-code">Mã phiếu giảm giá <span class="required-star">*</span></label>
+                                    <input type="text" id="voucher-code" class="input-control" placeholder="Mã tự sinh..." readonly required style="background: #e2e8f0; color: #475569; font-weight: 600; cursor: not-allowed;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="voucher-name">Tên phiếu giảm giá <span class="required-star">*</span></label>
+                                    <input type="text" id="voucher-name" class="input-control" required placeholder="Nhập tên phiếu giảm giá...">
+                                </div>
+                            </div>
+
+                            <!-- Hàng 2: Hình thức giảm & Loại phiếu -->
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label>Hình thức giảm <span class="required-star">*</span></label>
+                                    <div class="radio-group">
+                                        <label class="radio-control">
+                                            <input type="radio" name="loaiGiamGia" value="Phần trăm" checked
+                                                onchange="toggleDiscountType()">
+                                            % Phần trăm
+                                        </label>
+                                        <label class="radio-control">
+                                            <input type="radio" name="loaiGiamGia" value="Tiền mặt"
+                                                onchange="toggleDiscountType()">
+                                            VNĐ Tiền mặt
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Loại phiếu <span class="required-star">*</span></label>
+                                    <div class="radio-group">
+                                        <label class="radio-control">
+                                            <input type="radio" name="loaiPhieu" value="Công khai" checked
+                                                onchange="toggleVoucherType()">
+                                            Công khai
+                                        </label>
+                                        <label class="radio-control">
+                                            <input type="radio" name="loaiPhieu" value="Cá nhân"
+                                                onchange="toggleVoucherType()">
+                                            Cá nhân
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hàng 3: Giá trị giảm & Giảm tối đa -->
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label for="voucher-discount-val">Giá trị giảm <span
+                                            class="required-star">*</span></label>
+                                    <div class="number-input-wrapper">
+                                        <button type="button" class="number-input-btn minus"
+                                            onclick="adjustNumberInput('voucher-discount-val', -10)"><i class="bi bi-dash-lg"></i></button>
+                                        <input type="text" id="voucher-discount-val"
+                                            class="input-control number-input-control currency-input" required min="1"
+                                            placeholder="Nhập giá trị..." oninput="handleCurrencyInput(this)">
+                                        <button type="button" class="number-input-btn plus"
+                                            onclick="adjustNumberInput('voucher-discount-val', 10)"><i class="bi bi-plus-lg"></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="voucher-max-discount">Giảm tối đa (VNĐ)</label>
+                                    <div class="number-input-wrapper">
+                                        <button type="button" class="number-input-btn minus"
+                                            onclick="adjustNumberInput('voucher-max-discount', -10000)"><i class="bi bi-dash-lg"></i></button>
+                                        <input type="text" id="voucher-max-discount"
+                                            class="input-control number-input-control currency-input" min="0"
+                                            placeholder="Nhập mức giảm tối đa..." oninput="handleCurrencyInput(this)">
+                                        <button type="button" class="number-input-btn plus"
+                                            onclick="adjustNumberInput('voucher-max-discount', 10000)"><i class="bi bi-plus-lg"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hàng 4: Hóa đơn tối thiểu & Số lượng -->
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label for="voucher-min-order">Hóa đơn tối thiểu (VNĐ) <span
+                                            class="required-star">*</span></label>
+                                    <div class="number-input-wrapper">
+                                        <button type="button" class="number-input-btn minus"
+                                            onclick="adjustNumberInput('voucher-min-order', -20000)"><i class="bi bi-dash-lg"></i></button>
+                                        <input type="text" id="voucher-min-order"
+                                            class="input-control number-input-control currency-input" required min="0"
+                                            placeholder="Nhập hạn mức hóa đơn tối thiểu..." oninput="handleCurrencyInput(this)">
+                                        <button type="button" class="number-input-btn plus"
+                                            onclick="adjustNumberInput('voucher-min-order', 20000)"><i class="bi bi-plus-lg"></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="voucher-quantity">Số lượng sử dụng</label>
+                                    <div class="number-input-wrapper">
+                                        <button type="button" class="number-input-btn minus" id="btn-qty-minus"
+                                            onclick="adjustNumberInput('voucher-quantity', -1)"><i class="bi bi-dash-lg"></i></button>
+                                        <input type="number" id="voucher-quantity"
+                                            class="input-control number-input-control" min="1"
+                                            placeholder="Nhập số lượng phát hành...">
+                                        <button type="button" class="number-input-btn plus" id="btn-qty-plus"
+                                            onclick="adjustNumberInput('voucher-quantity', 1)"><i class="bi bi-plus-lg"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hàng 5: Ngày bắt đầu & Ngày kết thúc -->
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label for="voucher-start-date">Ngày bắt đầu <span
+                                            class="required-star">*</span></label>
+                                    <input type="datetime-local" id="voucher-start-date" class="input-control" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="voucher-end-date">Ngày kết thúc <span
+                                            class="required-star">*</span></label>
+                                    <input type="datetime-local" id="voucher-end-date" class="input-control" required>
+                                </div>
+                            </div>
+
+                            <!-- Hàng 6: Mô tả -->
+                            <div class="form-group" style="margin-bottom: 24px;">
+                                <label for="voucher-desc">Mô tả phiếu giảm giá</label>
+                                <div class="textarea-wrapper">
+                                    <textarea id="voucher-desc" class="input-control" rows="3" maxlength="500"
+                                        placeholder="Nhập thông tin mô tả chi tiết về phiếu..."
+                                        oninput="updateCharCount(this)"></textarea>
+                                    <span class="char-counter" id="desc-char-count">0/500</span>
+                                </div>
+                            </div>
+
+                            <!-- PHẦN CHỌN KHÁCH HÀNG (CHỈ HIỆN KHI LÀ PHIẾU CÁ NHÂN) -->
+                            <div id="customer-select-section" class="customer-section" style="display: none;">
+                                <div class="customer-section-title">Danh sách khách hàng nhận phiếu</div>
+
+                                <div class="customer-filter-bar">
+                                    <input type="text" id="cust-filter-search" class="input-control"
+                                        placeholder="Tìm theo mã / tên / SĐT / email..." oninput="applyCustFilters()">
+
+                                    <span
+                                        style="font-size: 13px; font-weight: 500; color: #64748b; margin-left: 8px;">Theo
+                                        tháng đặt:</span>
+                                    <select id="cust-filter-month" class="input-control" style="width: 110px;"
+                                        onchange="applyCustFilters()">
+                                        <option value="">Tháng</option>
+                                        <option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${m}"
+                                            th:text="${'Tháng ' + m}"></option>
+                                    </select>
+                                    <select id="cust-filter-year" class="input-control" style="width: 100px;"
+                                        onchange="applyCustFilters()">
+                                        <option value="">Năm</option>
+                                        <option value="2026">2026</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2024">2024</option>
+                                    </select>
+                                    <button type="button" class="btn-secondary" style="height: 40px;"
+                                        onclick="selectAllCurrentPageCustomers()">Chọn tất cả</button>
+                                </div>
+
+                                <div style="margin-bottom: 12px; font-size: 13px; font-weight: 600; color: #1e3a8a;">
+                                    Đã chọn: <span id="cust-selected-label">0</span> khách hàng
+                                </div>
+
+                                <!-- Bảng khách hàng -->
+                                <div class="table-scrollable">
+                                    <table class="customer-table" style="width:100%;">
+                                        <thead>
+                                            <tr>
+                                                <th class="checkbox-cell">
+                                                    <input type="checkbox" id="check-all-customers"
+                                                        onchange="toggleSelectAllPage(this.checked)">
+                                                </th>
+                                                <th style="width: 140px;">Mã KH</th>
+                                                <th style="width: 180px;">Tên KH</th>
+                                                <th style="width: 120px;">SĐT</th>
+                                                <th style="width: 200px;">Email</th>
+                                                <th style="width: 110px;">Ngày sinh</th>
+                                                <th style="width: 160px;">Ngày đặt gần nhất</th>
+                                                <th style="width: 100px; text-align: center;">Số lần đặt</th>
+                                                <th style="width: 140px; text-align: right;">Tổng tiền đã đặt</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="cust-table-body">
+                                            <!-- Load động -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Phân trang khách hàng -->
+                                <div class="table-footer" style="margin-top: 16px;">
+                                    <div class="total-count" id="cust-total-count">Tổng 0 khách hàng</div>
+                                    <div class="pagination-nav" id="cust-pagination">
+                                        <!-- Nút phân trang -->
+                                    </div>
+                                    <div class="page-size-selector">
+                                        <select class="page-size-select" id="cust-page-size"
+                                            onchange="changeCustPageSize(this.value)">
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="20">20</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer nút bấm -->
+                            <div class="modal-footer"
+                                style="padding-top: 20px; border-top: 1px solid #f1f5f9; margin-top: 28px;">
+                                <button type="button" class="btn-secondary" onclick="backToListPanel()">Hủy</button>
+                                <button type="submit" class="btn-primary-action">Lưu thông tin</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Script Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="/js/voucher.js?v=2.1" defer></script>
+</body>
+
+</html>

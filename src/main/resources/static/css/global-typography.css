@@ -1,0 +1,75 @@
+/* ============================================================
+   VSHOES GLOBAL TYPOGRAPHY SYSTEM (PREMIUM DESIGN)
+   Font Stack: Plus Jakarta Sans + Be Vietnam Pro + Outfit + Inter
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --font-primary: 'Plus Jakarta Sans', 'Be Vietnam Pro', 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-heading: 'Plus Jakarta Sans', 'Outfit', 'Be Vietnam Pro', sans-serif;
+    --font-accent: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+    --font: 'Plus Jakarta Sans', 'Be Vietnam Pro', 'Inter', 'Outfit', sans-serif;
+}
+
+/* Áp dụng phông chữ cao cấp chuẩn hoá toàn bộ hệ thống */
+html, body, input, button, select, textarea, optgroup, table, th, td, div, span, p, a, label, li, small, strong, b, em {
+    font-family: 'Plus Jakarta Sans', 'Be Vietnam Pro', 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeLegibility !important;
+}
+
+/* Tiêu đề sắc nét, khoảng cách chữ hiện đại */
+h1, h2, h3, h4, h5, h6,
+.screen-title, .page-title, .modal-title, .card-title, .table-title, .filter-title, .dg-card-title, .dg-modal-title, .card-header-title {
+    font-family: 'Plus Jakarta Sans', 'Outfit', 'Be Vietnam Pro', sans-serif !important;
+    letter-spacing: -0.022em !important;
+    font-feature-settings: 'cv02' on, 'cv03' on, 'cv04' on;
+}
+
+/* Số tiền, chỉ số thống kê & mã đơn hàng hiển thị thẳng hàng đẹp mắt */
+.price, .currency, .amount, .total, .stat-value, .dg-stat-value, .badge, .code, .tag, .dg-order-tag, .dg-prod-code {
+    font-feature-settings: 'tnum' on, 'lnum' on;
+    letter-spacing: -0.01em;
+}
+
+/* Tinh chỉnh input và textarea cho cảm giác gõ chữ thanh thoát */
+input, textarea, select {
+    font-size: 13.5px;
+    letter-spacing: -0.005em;
+}
+
+button {
+    letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   ĐỒNG BỘ TIÊU ĐỀ TẤT CẢ MÀN HÌNH QUẢN TRỊ ADMIN (20px - Bold)
+   ============================================================ */
+.main-content > .screen-header h1,
+.main-content > .screen-header h2,
+.main-content > .page-header h1,
+.main-content > .page-header h2,
+.screen-header h1,
+.screen-header h2,
+.screen-title,
+.page-title,
+.dg-page-title,
+.chat-page-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    margin: 0 !important;
+    line-height: 1.3 !important;
+}
+
+/* Ẩn tất cả các dòng chữ phụ/mô tả nhỏ bên dưới tiêu đề màn hình */
+.screen-header p,
+.page-header p,
+.screen-subtitle,
+.page-subtitle,
+.dg-page-subtitle,
+.chat-page-subtitle {
+    display: none !important;
+}

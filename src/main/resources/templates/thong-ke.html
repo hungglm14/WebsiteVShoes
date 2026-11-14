@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê | VShoes</title>
+    
+    <!-- Nhúng CSS sidebar & khách hàng dùng chung -->
+    <link rel="stylesheet" href="/css/sidebar.css?v=99">
+    <link rel="stylesheet" href="/css/header.css?v=99">
+    <link rel="stylesheet" href="/css/khach-hang.css?v=99">
+    <link rel="stylesheet" href="/css/phieu-giam-gia.css?v=99">
+    <link rel="stylesheet" href="/css/admin-common.css?v=2.0">
+    <link rel="stylesheet" href="/css/global-typography.css?v=2.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        /* Custom CSS cho trang Thống kê chuẩn theo thiết kế mẫu */
+        .thong-ke-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background-color: #f8fafc;
+            padding: 8px 4px;
+        }
+
+        /* Filter section */
+        .tk-filter-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .filter-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-title-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #0284c7;
+        }
+
+        .quick-date-group {
+            display: flex;
+            gap: 4px;
+            background: #f1f5f9;
+            padding: 3px;
+            border-radius: 8px;
+        }
+
+        .btn-quick-date {
+            border: none;
+            background: transparent;
+            color: #475569;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-quick-date:hover {
+            color: #0f172a;
+        }
+
+        .btn-quick-date.active {
+            background: #ffffff;
+            color: #0f172a;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+        }
+
+        .filter-controls-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input-group-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-label-sm {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .input-with-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 6px 12px;
+            height: 38px;
+        }
+
+        .input-with-icon input, .input-with-icon select {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 13px;
+            color: #1e293b;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .btn-reset-filter {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            height: 38px;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+        }
+        .btn-reset-filter:hover {
+            background: #f8fafc;
+        }
+
+        .filter-info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 13px;
+        }
+
+        .filter-info-text {
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-info-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #64748b;
+        }
+
+        .btn-sync-revenue {
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            color: #0284c7;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-sync-revenue:hover {
+            background: #bae6fd;
+        }
+
+        /* KPI Cards Grid */
+        .tk-kpi-row-top {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .tk-kpi-row-sub {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .kpi-card-new {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .kpi-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .kpi-icon-box.green {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+        .kpi-icon-box.purple {
+            background-color: #f3e8ff;
+            color: #9333ea;
+        }
+        .kpi-icon-box.blue {
+            background-color: #e0f2fe;
+            color: #0284c7;
+        }
+        .kpi-icon-box.yellow {
+            background-color: #fef9c3;
+            color: #ca8a04;
+        }
+        .kpi-icon-box.pink {
+            background-color: #ffe4e6;
+            color: #e11d48;
+        }
+
+        .kpi-content-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .kpi-content-box .kpi-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.25;
+        }
+
+        .kpi-content-box .kpi-lbl {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* Chart section */
+        .chart-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .chart-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid-2-col {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+        }
+
+        /* Toggle group for charts */
+        .chart-toggle-group {
+            display: flex;
+            gap: 4px;
+            background: #f1f5f9;
+            padding: 3px;
+            border-radius: 6px;
+        }
+        .btn-chart-toggle {
+            border: none;
+            background: transparent;
+            color: #64748b;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .btn-chart-toggle.active {
+            background: #ffffff;
+            color: #0f172a;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        /* Order Status Summary Grid */
+        .order-status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .status-item-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f8fafc;
+            border: 1px solid #f1f5f9;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .status-item-card:hover {
+            background-color: #f1f5f9;
+            border-color: #e2e8f0;
+        }
+
+        .status-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #334155;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .status-item-count {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Nhúng Sidebar dùng chung -->
+        <div th:replace="~{sidebar/sidebar :: sidebar}"></div>
+
+        <!-- NỘI DUNG CHÍNH -->
+        <main class="main-content">
+            <!-- Nhúng Header dùng chung -->
+            <div th:replace="~{header/header :: header}"></div>
+            
+            <div class="thong-ke-container">
+                
+                <!-- TIÊU ĐỀ MÀN HÌNH -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 20px; font-weight: 700; color: #1e293b; margin: 0;">Thống kê</h2>
+                </div>
+                
+                <!-- BỘ LỌC TỔNG QUAN -->
+                <div class="tk-filter-card">
+                    <div class="filter-top-bar">
+                        <div class="filter-title-group">
+                            <i data-lucide="filter" style="width: 18px; height: 18px; color: #0284c7;"></i>
+                            <span>Bộ lọc tổng quan</span>
+                        </div>
+                        <div class="quick-date-group">
+                            <button class="btn-quick-date" id="btn-quick-today">Hôm nay</button>
+                            <button class="btn-quick-date" id="btn-quick-7days">7 ngày qua</button>
+                            <button class="btn-quick-date active" id="btn-quick-month">Tháng này</button>
+                            <button class="btn-quick-date" id="btn-quick-last-month">Tháng trước</button>
+                            <button class="btn-quick-date" id="btn-quick-year">Năm nay</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-controls-row">
+                        <div class="input-group-field">
+                            <span class="input-label-sm">Từ ngày</span>
+                            <div class="input-with-icon">
+                                <i data-lucide="calendar" style="width: 16px; height: 16px; color: #94a3b8;"></i>
+                                <input type="date" id="filter-start">
+                            </div>
+                        </div>
+
+                        <div class="input-group-field">
+                            <span class="input-label-sm">Đến ngày</span>
+                            <div class="input-with-icon">
+                                <i data-lucide="calendar" style="width: 16px; height: 16px; color: #94a3b8;"></i>
+                                <input type="date" id="filter-end">
+                            </div>
+                        </div>
+
+                        <div class="input-group-field">
+                            <span class="input-label-sm">Tổng quan</span>
+                            <div class="input-with-icon">
+                                <i data-lucide="bar-chart-2" style="width: 16px; height: 16px; color: #94a3b8;"></i>
+                                <select id="filter-tong-quan-mode">
+                                    <option value="day">Theo ngày</option>
+                                    <option value="month">Theo tháng</option>
+                                    <option value="year">Theo năm</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group-field">
+                            <span class="input-label-sm">Thương hiệu</span>
+                            <div class="input-with-icon">
+                                <i data-lucide="store" style="width: 16px; height: 16px; color: #94a3b8;"></i>
+                                <select id="filter-thuong-hieu-select">
+                                    <option value="">Tất cả thương hiệu</option>
+                                    <option th:each="th : ${listThuongHieu}" th:value="${th.id}" th:text="${th.tenThuongHieu}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group-field" style="flex: 1; min-width: 180px;">
+                            <span class="input-label-sm">Tìm theo thương hiệu</span>
+                            <div class="input-with-icon">
+                                <i data-lucide="search" style="width: 16px; height: 16px; color: #94a3b8;"></i>
+                                <input type="text" id="filter-thuong-hieu-search" placeholder="Nhập tên thương hiệu...">
+                            </div>
+                        </div>
+
+                        <div class="input-group-field" style="align-self: flex-end;">
+                            <button id="btn-reset-filter" class="fi-reset-btn" title="Làm mới bộ lọc">
+                                <i data-lucide="refresh-cw"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filter-info-bar">
+                        <div class="filter-info-text">
+                            <span style="color:#3b82f6; font-weight:bold;">•</span>
+                            <span id="filter-info-range">Đang hiển thị dữ liệu tổng quan từ ngày 01/08/2026 đến ngày 09/08/2026</span>
+                        </div>
+                        <div class="filter-info-right">
+                            <span>Cập nhật lúc <b id="last-update-time">--:--:--</b> - Tự động lúc <b>22:00</b></span>
+                            <button class="btn-sync-revenue" id="btn-sync-data">
+                                <i data-lucide="rotate-cw" style="width: 14px; height: 14px;"></i> Cập nhật doanh thu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 1 KPI CARDS (3 CARDS) -->
+                <div class="tk-kpi-row-top">
+                    <div class="kpi-card-new">
+                        <div class="kpi-icon-box green">
+                            <i data-lucide="trending-up" style="width: 22px; height: 22px;"></i>
+                        </div>
+                        <div class="kpi-content-box">
+                            <div class="kpi-val" id="kpi-tong-doanh-thu">0 ₫</div>
+                            <div class="kpi-lbl">Tổng doanh thu</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-new">
+                        <div class="kpi-icon-box green">
+                            <i data-lucide="trending-up" style="width: 22px; height: 22px;"></i>
+                        </div>
+                        <div class="kpi-content-box">
+                            <div class="kpi-val" id="kpi-tong-tien-mat">0 ₫</div>
+                            <div class="kpi-lbl">Tổng tiền mặt</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-new">
+                        <div class="kpi-icon-box purple">
+                            <i data-lucide="credit-card" style="width: 22px; height: 22px;"></i>
+                        </div>
+                        <div class="kpi-content-box">
+                            <div class="kpi-val" id="kpi-tong-chuyen-khoan">0 ₫</div>
+                            <div class="kpi-lbl">Tổng tiền chuyển khoản</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 2 KPI CARDS (4 CARDS) -->
+                <div class="tk-kpi-row-sub">
+                    <div class="kpi-card-new">
+                        <div class="kpi-icon-box blue">
+                            <i data-lucide="shopping-cart" style="width: 20px; height: 20px;"></i>
+                        </div>
+                        <div class="kpi-content-box">
+                            <div class="kpi-val" id="kpi-tong-don">0</div>
+                            <div class="kpi-lbl">Tổng đơn hàng</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-new">
+                        <div class="kpi-icon-box purple">
+                            <i data-lucide="credit-card" style="width: 20px; height: 20px;"></i>
+                        </div>
+                        <div class="kpi-content-box">
+                            <div class="kpi-val" id="kpi-aov">0 ₫</div>
+                            <div class="kpi-lbl">Giá trị trung bình đơn (AOV)</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-new">
+                        <div class="kpi-icon-box yellow">
+                            <i data-lucide="package" style="width: 20px; height: 20px;"></i>
+                        </div>
+                        <div class="kpi-content-box">
+                            <div class="kpi-val" id="kpi-sp-da-ban">0</div>
+                            <div class="kpi-lbl">Sản phẩm đã bán</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-new">
+                        <div class="kpi-icon-box pink">
+                            <i data-lucide="users" style="width: 20px; height: 20px;"></i>
+                        </div>
+                        <div class="kpi-content-box">
+                            <div class="kpi-val" id="kpi-khach-moi">0</div>
+                            <div class="kpi-lbl">Khách mới</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MAIN CHARTS SECTION -->
+                <div class="grid-2-col">
+                    <!-- Left Chart: Sản phẩm bán được theo ngày / Doanh thu -->
+                    <div class="chart-section">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i data-lucide="bar-chart-2" style="width: 18px; height: 18px; color: #0284c7;"></i>
+                                <span id="main-chart-title-label">Sản phẩm bán được theo ngày</span>
+                            </div>
+                            <div class="chart-toggle-group">
+                                <button class="btn-chart-toggle active" id="btn-main-chart-bar">Cột</button>
+                                <button class="btn-chart-toggle" id="btn-main-chart-line">Đường</button>
+                            </div>
+                        </div>
+                        <div style="height: 320px; width: 100%;">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Chart: Cơ cấu trạng thái đơn hàng -->
+                    <div class="chart-section" style="display: flex; flex-direction: column;">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i data-lucide="clock" style="width: 18px; height: 18px; color: #0284c7;"></i>
+                                <span>Cơ cấu trạng thái đơn hàng</span>
+                            </div>
+                        </div>
+                        <div style="height: 220px; width: 100%; position: relative;">
+                            <canvas id="orderStatusChart"></canvas>
+                        </div>
+                        <div id="orderStatusGrid" class="order-status-grid">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOP SẢN PHẨM BÁN CHẠY -->
+                <div class="chart-section">
+                    <div class="chart-title" style="margin-bottom: 16px;">Top sản phẩm bán chạy</div>
+                    
+                    <!-- BỘ LỌC TOP SẢN PHẨM -->
+                    <div class="tk-filter-card mb-4" id="top-sp-filters" style="margin-bottom: 16px; padding: 16px; box-shadow: none; background-color: #f8fafc;">
+                        <div class="row" style="display: flex; gap: 20px; margin-bottom: 12px;">
+                            <div style="flex: 1;">
+                                <label class="fi-label">Chất Liệu:</label>
+                                <select class="fi-input fi-select" id="filter-chat-lieu">
+                                    <option value="">Tất cả</option>
+                                    <option th:each="cl : ${listChatLieu}" th:value="${cl.id}" th:text="${cl.tenChatLieu}"></option>
+                                </select>
+                            </div>
+                            <div style="flex: 1;">
+                                <label class="fi-label">Thương Hiệu:</label>
+                                <select class="fi-input fi-select" id="filter-thuong-hieu">
+                                    <option value="">Tất cả</option>
+                                    <option th:each="th : ${listThuongHieu}" th:value="${th.id}" th:text="${th.tenThuongHieu}"></option>
+                                </select>
+                            </div>
+                            <div style="flex: 1;">
+                                <label class="fi-label">Loại giày:</label>
+                                <select class="fi-input fi-select" id="filter-loai-giay">
+                                    <option value="">Tất cả</option>
+                                    <option th:each="lg : ${listLoaiGiay}" th:value="${lg.id}" th:text="${lg.tenLoaiGiay}"></option>
+                                </select>
+                            </div>
+                            <div style="flex: 1;">
+                                <label class="fi-label">Kích cỡ:</label>
+                                <select class="fi-input fi-select" id="filter-kich-co">
+                                    <option value="">Tất cả</option>
+                                    <option th:each="cg : ${listCoGiay}" th:value="${cg.id}" th:text="${cg.sizeGiay}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" style="display: flex; gap: 20px; align-items: flex-end;">
+                            <div style="flex: 1;">
+                                <label class="fi-label">Màu Sắc:</label>
+                                <select class="fi-input fi-select" id="filter-mau-sac">
+                                    <option value="">Tất cả</option>
+                                    <option th:each="ms : ${listMauSac}" th:value="${ms.id}" th:text="${ms.tenMauSac}"></option>
+                                </select>
+                            </div>
+                            <div style="flex: 1;">
+                                <label class="fi-label">Danh Mục:</label>
+                                <select class="fi-input fi-select" id="filter-danh-muc">
+                                    <option value="">Tất cả</option>
+                                    <option th:each="dm : ${listDanhMuc}" th:value="${dm.id}" th:text="${dm.tenDanhMuc}"></option>
+                                </select>
+                            </div>
+                            <div style="flex: 1;">
+                                <label class="fi-label">Trạng Thái:</label>
+                                <select class="fi-input fi-select" id="filter-trang-thai">
+                                    <option value="">Tất cả</option>
+                                    <option value="1">Kinh Doanh</option>
+                                    <option value="0">Ngừng kinh doanh</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1;">
+                                <button id="btn-loc-top-sp" class="btn-outline active" style="width: 100%; justify-content: center; height: 38px; background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd;">
+                                    <i data-lucide="filter" style="width: 18px; height: 18px;"></i> Lọc
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-scrollable">
+                        <table class="customer-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">STT</th>
+                                    <th>Mã SP</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Thuộc tính</th>
+                                    <th>Giá</th>
+                                    <th>Tồn kho</th>
+                                    <th>Đã bán</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-sp-body">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; color: #94a3b8; padding: 24px;">Đang tải dữ liệu...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Standardized Table Footer for Pagination -->
+                    <div class="table-footer d-flex justify-content-between align-items-center" id="top-sp-pagination-wrapper" style="margin-top: 16px; padding: 14px 16px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <div class="total-count text-muted" id="top-sp-count-info" style="font-size: 13px;"></div>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div class="page-size-selector" style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 13px; color: #64748b; font-weight: 500;">Hiển thị</span>
+                                <select id="top-sp-page-size" class="form-select form-select-sm page-size-select" style="width: auto; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: #0f172a; height: 32px;" onchange="changeTopSpPageSize(this.value)">
+                                    <option value="5" selected>5</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div id="top-sp-pagination" class="pagination-controls" style="display: flex; gap: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    </div>
+
+    <!-- Script Lucide Icons & Chart.js -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let mainChartInstance = null;
+        let orderStatusChartInstance = null;
+        let currentMainChartType = 'bar'; // 'bar' or 'line'
+
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            
+            // Set default range to 'Tháng này'
+            setQuickDateRange('month');
+
+            initCharts();
+            loadThongKeData();
+            
+            // Event Listeners for Quick Date Buttons
+            document.getElementById('btn-quick-today').addEventListener('click', (e) => { setActiveQuickBtn(e.target); setQuickDateRange('today'); loadThongKeData(); });
+            document.getElementById('btn-quick-7days').addEventListener('click', (e) => { setActiveQuickBtn(e.target); setQuickDateRange('7days'); loadThongKeData(); });
+            document.getElementById('btn-quick-month').addEventListener('click', (e) => { setActiveQuickBtn(e.target); setQuickDateRange('month'); loadThongKeData(); });
+            document.getElementById('btn-quick-last-month').addEventListener('click', (e) => { setActiveQuickBtn(e.target); setQuickDateRange('last-month'); loadThongKeData(); });
+            document.getElementById('btn-quick-year').addEventListener('click', (e) => { setActiveQuickBtn(e.target); setQuickDateRange('year'); loadThongKeData(); });
+
+            // Date picker change events
+            document.getElementById('filter-start').addEventListener('change', () => loadThongKeData());
+            document.getElementById('filter-end').addEventListener('change', () => loadThongKeData());
+            document.getElementById('filter-tong-quan-mode').addEventListener('change', () => loadThongKeData());
+            if (document.getElementById('filter-thuong-hieu-select')) {
+                document.getElementById('filter-thuong-hieu-select').addEventListener('change', () => loadThongKeData());
+            }
+
+            // Reset button
+            document.getElementById('btn-reset-filter').addEventListener('click', () => {
+                if (document.getElementById('filter-thuong-hieu-select')) document.getElementById('filter-thuong-hieu-select').value = '';
+                if (document.getElementById('filter-thuong-hieu-search')) document.getElementById('filter-thuong-hieu-search').value = '';
+                document.getElementById('filter-tong-quan-mode').value = 'day';
+                setActiveQuickBtn(document.getElementById('btn-quick-month'));
+                setQuickDateRange('month');
+                loadThongKeData();
+            });
+
+            // Sync revenue button
+            document.getElementById('btn-sync-data').addEventListener('click', () => {
+                loadThongKeData();
+            });
+
+            // Chart toggle buttons
+            document.getElementById('btn-main-chart-bar').addEventListener('click', () => {
+                currentMainChartType = 'bar';
+                document.getElementById('btn-main-chart-bar').classList.add('active');
+                document.getElementById('btn-main-chart-line').classList.remove('active');
+                loadThongKeData();
+            });
+            document.getElementById('btn-main-chart-line').addEventListener('click', () => {
+                currentMainChartType = 'line';
+                document.getElementById('btn-main-chart-line').classList.add('active');
+                document.getElementById('btn-main-chart-bar').classList.remove('active');
+                loadThongKeData();
+            });
+        });
+
+        function setActiveQuickBtn(activeBtn) {
+            document.querySelectorAll('.btn-quick-date').forEach(btn => btn.classList.remove('active'));
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function setQuickDateRange(rangeType) {
+            const today = new Date();
+            let start = new Date();
+            let end = new Date();
+
+            if (rangeType === 'today') {
+                start = today;
+                end = today;
+            } else if (rangeType === '7days') {
+                start = new Date(today);
+                start.setDate(today.getDate() - 6);
+                end = today;
+            } else if (rangeType === 'month') {
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                end = today;
+            } else if (rangeType === 'last-month') {
+                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                end = new Date(today.getFullYear(), today.getMonth(), 0);
+            } else if (rangeType === 'year') {
+                start = new Date(today.getFullYear(), 0, 1);
+                end = today;
+            }
+
+            document.getElementById('filter-start').value = formatDateStr(start);
+            document.getElementById('filter-end').value = formatDateStr(end);
+        }
+
+        function formatDateStr(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatDateDisplay(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function updateLastSyncTime() {
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            document.getElementById('last-update-time').innerText = timeStr;
+        }
+
+        function initCharts() {
+            // Main Chart Initial Configuration
+            const ctxMain = document.getElementById('mainChart').getContext('2d');
+            mainChartInstance = new Chart(ctxMain, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Sản phẩm / Doanh thu',
+                        data: [],
+                        backgroundColor: '#ef4444',
+                        borderColor: '#dc2626',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Order Status Initial Configuration
+            const ctxStatus = document.getElementById('orderStatusChart').getContext('2d');
+            orderStatusChartInstance = new Chart(ctxStatus, {
+                type: 'pie',
+                data: {
+                    labels: ['Chờ xác nhận', 'Hoàn thành', 'Hủy', 'Đã xác nhận', 'Giao hàng thất bại'],
+                    datasets: [{
+                        data: [1, 1, 1, 1, 1],
+                        backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4'],
+                        borderWidth: 1,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 10,
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadThongKeData() {
+            const start = document.getElementById('filter-start').value;
+            const end = document.getElementById('filter-end').value;
+            
+            // Update info display range
+            document.getElementById('filter-info-range').innerText = 
+                `Đang hiển thị dữ liệu tổng quan từ ngày ${formatDateDisplay(start)} đến ngày ${formatDateDisplay(end)}`;
+            
+            updateLastSyncTime();
+
+            let queryParams = '';
+            if (start && end) {
+                queryParams = `?startDate=${start}T00:00:00&endDate=${end}T23:59:59`;
+            } else if (start) {
+                queryParams = `?startDate=${start}T00:00:00`;
+            } else if (end) {
+                queryParams = `?endDate=${end}T23:59:59`;
+            }
+
+            // 1. Fetch Tong Quan Metrics
+            fetch(`/api/thong-ke/tong-quan${queryParams}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('kpi-tong-doanh-thu').innerText = formatCurrency(data.tongDoanhThu);
+                    document.getElementById('kpi-tong-tien-mat').innerText = formatCurrency(data.tongTienMat != null ? data.tongTienMat : data.tongDoanhThu);
+                    document.getElementById('kpi-tong-chuyen-khoan').innerText = formatCurrency(data.tongTienChuyenKhoan != null ? data.tongTienChuyenKhoan : 0);
+                    
+                    document.getElementById('kpi-tong-don').innerText = (data.tongDonHang || 0).toLocaleString('vi-VN');
+                    document.getElementById('kpi-aov').innerText = formatCurrency(data.giaTriTrungBinhDon || 0);
+                    document.getElementById('kpi-sp-da-ban').innerText = (data.sanPhamDaBan || 0).toLocaleString('vi-VN');
+                    document.getElementById('kpi-khach-moi').innerText = (data.khachMoi || 0).toLocaleString('vi-VN');
+                })
+                .catch(err => console.error("Error loading tong quan stats:", err));
+
+            // 2. Fetch Bieu Do Main (Sales per Day)
+            fetch(`/api/thong-ke/bieu-do${queryParams}`)
+                .then(res => res.json())
+                .then(data => {
+                    let labels = [];
+                    let values = [];
+
+                    if (start && end) {
+                        const [sYear, sMonth, sDay] = start.split('-').map(Number);
+                        const [eYear, eMonth, eDay] = end.split('-').map(Number);
+                        const startDate = new Date(sYear, sMonth - 1, sDay);
+                        const endDate = new Date(eYear, eMonth - 1, eDay);
+
+                        let currentDate = new Date(startDate);
+                        const dataMap = {};
+                        (data || []).forEach(item => {
+                            dataMap[item.ngay] = item.doanhThu;
+                        });
+
+                        while (currentDate <= endDate) {
+                            const year = currentDate.getFullYear();
+                            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                            const day = String(currentDate.getDate()).padStart(2, '0');
+                            const dateStr = `${year}-${month}-${day}`;
+
+                            labels.push(day + '/' + month);
+                            values.push(dataMap[dateStr] || 0);
+
+                            currentDate.setDate(currentDate.getDate() + 1);
+                        }
+                    } else {
+                        labels = (data || []).map(item => item.ngay);
+                        values = (data || []).map(item => item.doanhThu);
+                    }
+
+                    if (mainChartInstance) {
+                        mainChartInstance.destroy();
+                    }
+
+                    const ctxMain = document.getElementById('mainChart').getContext('2d');
+                    if (currentMainChartType === 'bar') {
+                        mainChartInstance = new Chart(ctxMain, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Doanh thu',
+                                    data: values,
+                                    backgroundColor: '#ef4444',
+                                    borderColor: '#dc2626',
+                                    borderWidth: 1,
+                                    borderRadius: 4
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                                    x: { grid: { display: false } }
+                                }
+                            }
+                        });
+                    } else {
+                        mainChartInstance = new Chart(ctxMain, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Doanh thu',
+                                    data: values,
+                                    borderColor: '#ef4444',
+                                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                    borderWidth: 2,
+                                    tension: 0.3,
+                                    fill: true
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                                    x: { grid: { display: false } }
+                                }
+                            }
+                        });
+                    }
+                })
+                .catch(err => console.error("Error loading main chart:", err));
+
+            // 3. Fetch Order Status Data (Cơ cấu trạng thái đơn hàng)
+            fetch(`/api/thong-ke/trang-thai${queryParams}`)
+                .then(res => res.json())
+                .then(data => {
+                    renderOrderStatusChart(data || []);
+                })
+                .catch(err => {
+                    console.error("Error loading order status stats:", err);
+                    renderOrderStatusChart([]);
+                });
+
+            // 4. Load Top Products
+            loadTopSanPhamData();
+        }
+
+        const STATUS_DEFINITIONS = [
+            { key: 'cho_xac_nhan', codes: [0], name: 'Chờ xác nhận', color: '#ef4444' },
+            { key: 'hoan_thanh', codes: [5, 6], name: 'Hoàn thành', color: '#f97316' },
+            { key: 'huy', codes: [7, 8], name: 'Hủy', color: '#f59e0b' },
+            { key: 'da_xac_nhan', codes: [1], name: 'Đã xác nhận', color: '#10b981' },
+            { key: 'that_bai', codes: [4], name: 'Giao hàng thất bại', color: '#06b6d4' },
+            { key: 'dang_giao', codes: [2, 3], name: 'Đang giao', color: '#3b82f6' },
+            { key: 'hoan_tien', codes: [9], name: 'Đã hoàn tiền', color: '#8b5cf6' }
+        ];
+
+        function renderOrderStatusChart(data) {
+            const rawList = data || [];
+            
+            const items = STATUS_DEFINITIONS.map(def => {
+                let total = 0;
+                rawList.forEach(row => {
+                    if (def.codes.includes(row.trangThai)) {
+                        total += (row.soLuong || 0);
+                    }
+                });
+                return {
+                    name: def.name,
+                    color: def.color,
+                    count: total
+                };
+            });
+
+            // Priority display: Always include the 5 standard statuses from reference mockup, plus any status with count > 0
+            const standardNames = ['Chờ xác nhận', 'Hoàn thành', 'Hủy', 'Đã xác nhận', 'Giao hàng thất bại'];
+            let displayItems = items.filter(it => standardNames.includes(it.name) || it.count > 0);
+
+            const labels = displayItems.map(it => it.name);
+            const values = displayItems.map(it => it.count);
+            const colors = displayItems.map(it => it.color);
+
+            const totalCount = values.reduce((a, b) => a + b, 0);
+            const chartData = (totalCount === 0) ? displayItems.map(() => 1) : values;
+
+            if (orderStatusChartInstance) {
+                orderStatusChartInstance.destroy();
+            }
+
+            const ctxStatus = document.getElementById('orderStatusChart').getContext('2d');
+            orderStatusChartInstance = new Chart(ctxStatus, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: chartData,
+                        backgroundColor: colors,
+                        borderWidth: 1,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 10,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const actualVal = values[context.dataIndex] || 0;
+                                    return ` ${context.label}: ${actualVal} đơn`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Render 2-column grid cards
+            const gridEl = document.getElementById('orderStatusGrid');
+            if (gridEl) {
+                gridEl.innerHTML = displayItems.map(it => `
+                    <div class="status-item-card">
+                        <div class="status-item-left">
+                            <span class="status-dot" style="background-color: ${it.color};"></span>
+                            <span>${it.name}</span>
+                        </div>
+                        <span class="status-item-count">${it.count}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Top San Pham Data & Pagination
+        let allTopSanPham = [];
+        let currentTopSpPage = 1;
+        let topSpItemsPerPage = 5;
+
+        function changeTopSpPageSize(newSize) {
+            topSpItemsPerPage = parseInt(newSize, 10) || 5;
+            renderTopSanPhamTable(1);
+        }
+
+        function loadTopSanPhamData() {
+            const start = document.getElementById('filter-start').value;
+            const end = document.getElementById('filter-end').value;
+            let url = `/api/thong-ke/top-san-pham?1=1`;
+            
+            if (start) url += `&startDate=${start}T00:00:00`;
+            if (end) url += `&endDate=${end}T23:59:59`;
+            
+            const chatLieu = document.getElementById('filter-chat-lieu')?.value;
+            if (chatLieu) url += `&idChatLieu=${chatLieu}`;
+            
+            const thuongHieu = document.getElementById('filter-thuong-hieu')?.value;
+            if (thuongHieu) url += `&idThuongHieu=${thuongHieu}`;
+            
+            const loaiGiay = document.getElementById('filter-loai-giay')?.value;
+            if (loaiGiay) url += `&idLoaiGiay=${loaiGiay}`;
+            
+            const kichCo = document.getElementById('filter-kich-co')?.value;
+            if (kichCo) url += `&idCoGiay=${kichCo}`;
+            
+            const mauSac = document.getElementById('filter-mau-sac')?.value;
+            if (mauSac) url += `&idMauSac=${mauSac}`;
+            
+            const danhMuc = document.getElementById('filter-danh-muc')?.value;
+            if (danhMuc) url += `&idDanhMuc=${danhMuc}`;
+            
+            const trangThai = document.getElementById('filter-trang-thai')?.value;
+            if (trangThai !== "" && trangThai !== undefined) url += `&trangThai=${trangThai}`;
+
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    allTopSanPham = data || [];
+                    renderTopSanPhamTable(1);
+                })
+                .catch(err => console.error("Error loading top sp:", err));
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnLocTopSp = document.getElementById('btn-loc-top-sp');
+            if (btnLocTopSp) {
+                btnLocTopSp.addEventListener('click', () => {
+                    loadTopSanPhamData();
+                });
+            }
+        });
+
+        function renderTopSanPhamTable(page) {
+            const tbody = document.getElementById('top-sp-body');
+            const paginationWrapper = document.getElementById('top-sp-pagination-wrapper');
+            const paginationDiv = document.getElementById('top-sp-pagination');
+            const countInfoDiv = document.getElementById('top-sp-count-info');
+            
+            if (!allTopSanPham || allTopSanPham.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 24px;">Không có dữ liệu.</td></tr>';
+                if (paginationWrapper) paginationWrapper.style.display = 'none';
+                return;
+            }
+            
+            if (paginationWrapper) paginationWrapper.style.display = 'flex';
+            
+            const totalElements = allTopSanPham.length;
+            const totalPages = Math.ceil(totalElements / topSpItemsPerPage);
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            currentTopSpPage = page;
+            
+            const startIdx = (page - 1) * topSpItemsPerPage;
+            const endIdx = Math.min(startIdx + topSpItemsPerPage, totalElements);
+            const pageData = allTopSanPham.slice(startIdx, endIdx);
+            
+            let html = '';
+            pageData.forEach((sp, index) => {
+                html += `
+                    <tr>
+                        <td style="text-align: center; color: #64748b; font-weight: 500;">${startIdx + index + 1}</td>
+                        <td style="font-weight: 600; color: #0f172a;">${sp.maSanPham || '-'}</td>
+                        <td style="color: #1e293b; font-weight: 500;">${sp.tenSanPham || '-'}</td>
+                        <td><span class="app-badge app-badge-info" style="font-size: 12px;">${sp.thuocTinh || '-'}</span></td>
+                        <td style="font-weight: 600; color: #0f172a;">${formatCurrency(sp.donGia)}</td>
+                        <td style="text-align: center; color: #475569;">${sp.tonKho || 0}</td>
+                        <td style="text-align: center; font-weight: 700; color: #16a34a;">${sp.daBan || 0}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+            
+            if (countInfoDiv) {
+                countInfoDiv.innerHTML = `Đang hiển thị <span class="fw-bold text-dark">${startIdx + 1}</span>-<span class="fw-bold text-dark">${endIdx}</span> trong tổng số <span class="fw-bold text-dark">${totalElements}</span> kết quả`;
+            }
+            
+            if (totalPages <= 1) {
+                if (paginationDiv) paginationDiv.innerHTML = '';
+                return;
+            }
+            
+            let pageHtml = '';
+            // Prev button
+            pageHtml += `<button class="page-btn ${currentTopSpPage === 1 ? 'disabled' : ''}" onclick="renderTopSanPhamTable(${currentTopSpPage - 1})" ${currentTopSpPage === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`;
+            
+            // Window of pages
+            let startPage = Math.max(1, currentTopSpPage - 1);
+            let endPage = Math.min(totalPages, startPage + 2);
+            if (endPage - startPage < 2) {
+                startPage = Math.max(1, endPage - 2);
+            }
+            
+            if (startPage > 1) {
+                pageHtml += `<button class="page-btn" onclick="renderTopSanPhamTable(1)">1</button>`;
+                if (startPage > 2) {
+                    pageHtml += `<span style="display:inline-flex; align-items:center; padding: 0 4px; color: #94a3b8;">...</span>`;
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                if (i === currentTopSpPage) {
+                    pageHtml += `<button class="page-btn active">${i}</button>`;
+                } else {
+                    pageHtml += `<button class="page-btn" onclick="renderTopSanPhamTable(${i})">${i}</button>`;
+                }
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    pageHtml += `<span style="display:inline-flex; align-items:center; padding: 0 4px; color: #94a3b8;">...</span>`;
+                }
+                pageHtml += `<button class="page-btn" onclick="renderTopSanPhamTable(${totalPages})">${totalPages}</button>`;
+            }
+            
+            // Next button
+            pageHtml += `<button class="page-btn ${currentTopSpPage === totalPages ? 'disabled' : ''}" onclick="renderTopSanPhamTable(${currentTopSpPage + 1})" ${currentTopSpPage === totalPages ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`;
+            
+            if (paginationDiv) paginationDiv.innerHTML = pageHtml;
+        }
+
+        function formatCurrency(val) {
+            if (val === null || val === undefined) return '0 ₫';
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+        }
+    </script>
+</body>
+
+</html>

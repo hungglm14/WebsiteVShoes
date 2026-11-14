@@ -1,0 +1,12 @@
+package com.example.be.service;
+
+import com.example.be.entity.KhachHang;
+import com.example.be.entity.PhieuGiamGia;
+
+public interface EmailService {
+    void sendVoucherNotification(KhachHang customer, PhieuGiamGia voucher);
+    void sendVoucherUpdateNotification(KhachHang customer, PhieuGiamGia voucher);
+    void sendVoucherCancelNotification(KhachHang customer, PhieuGiamGia voucher);
+    void sendInvoiceEmail(com.example.be.dto.HoaDonDTO invoice, java.util.List<java.util.Map<String, Object>> items);
+    void sendCampaignNotification(java.util.List<KhachHang> customers, com.example.be.entity.DotGiamGia campaign, String action);
+}

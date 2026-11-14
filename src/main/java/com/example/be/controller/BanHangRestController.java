@@ -1,0 +1,238 @@
+package com.example.be.controller;
+
+import com.example.be.entity.HoaDon;
+import com.example.be.entity.ChiTietHoaDon;
+import com.example.be.service.BanHangService;
+import com.example.be.service.PhieuGiamGiaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping({"/api/pos", "/api/ban-hang"})
+public class BanHangRestController {
+
+    @Autowired
+    private BanHangService banHangService;
+
+    @Autowired
+    private PhieuGiamGiaService phieuGiamGiaService;
+
+    // --- 1. Order Management ---
+
+    @GetMapping("/hoa-don-cho")
+    public ResponseEntity<?> getHoaDonCho() {
+        List<HoaDon> list = banHangService.getDanhSachHoaDonCho();
+        List<Map<String, Object>> result = list.stream().map(hd -> {
+            Map<String, Object> map = mapHoaDon(hd);
+            List<ChiTietHoaDon> details = banHangService.getChiTietHoaDon(hd.getId());
+            int totalQty = details.stream()
+                    .mapToInt(ct -> ct.getSoLuong() != null ? ct.getSoLuong() : 0)
+                    .sum();
+            map.put("soLuongSanPham", totalQty);
+            map.put("soLoaiSanPham", details.size());
+            return map;
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/tao-hoa-don")
+    public ResponseEntity<?> taoHoaDon() {
+        try {
+            HoaDon hd = banHangService.taoHoaDonCho();
+            return ResponseEntity.ok(mapHoaDon(hd));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/hoa-don/{id}")
+    public ResponseEntity<?> huyHoaDon(@PathVariable Long id) {
+        try {
+            banHangService.huyHoaDonCho(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Lỗi khi hủy hóa đơn: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/hoa-don/{id}/chi-tiet")
+    public ResponseEntity<?> getChiTietHoaDon(@PathVariable Long id) {
+        Map<String, Object> result = banHangService.getHoaDonChiTietResponse(id);
+        if (result == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(result);
+    }
+
+    // --- 2. Cart Management ---
+
+    @GetMapping("/san-pham")
+    public ResponseEntity<?> getSanPham(@RequestParam(required = false, defaultValue = "") String keyword) {
+        return ResponseEntity.ok(banHangService.getDanhSachSanPhamBanHang(keyword));
+    }
+
+    @PostMapping("/hoa-don/{id}/them-san-pham")
+    public ResponseEntity<?> themSanPham(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        try {
+            Long idSanPhamChiTiet = Long.valueOf(payload.get("idSanPhamChiTiet").toString());
+            Integer soLuong = Integer.valueOf(payload.get("soLuong").toString());
+            banHangService.themSanPhamVaoHoaDon(id, idSanPhamChiTiet, soLuong);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/chi-tiet/{id}")
+    public ResponseEntity<?> capNhatSoLuong(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        try {
+            Integer soLuong = Integer.valueOf(payload.get("soLuong").toString());
+            banHangService.capNhatSoLuong(id, soLuong);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/chi-tiet/{id}")
+    public ResponseEntity<?> xoaChiTiet(@PathVariable Long id) {
+        try {
+            banHangService.xoaChiTiet(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // --- 3. Checkout ---
+
+    @PostMapping("/hoa-don/{id}/thanh-toan")
+    public ResponseEntity<?> thanhToan(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        try {
+            String hinhThucThanhToan = payload.get("hinhThucThanhToan") != null ? payload.get("hinhThucThanhToan").toString() : "CASH";
+            BigDecimal tienKhachDua = (payload.get("tienKhachDua") != null && !payload.get("tienKhachDua").toString().trim().isEmpty())
+                    ? new BigDecimal(payload.get("tienKhachDua").toString())
+                    : BigDecimal.ZERO;
+            String ghiChu = payload.get("ghiChu") != null ? payload.get("ghiChu").toString() : "";
+            String tenKhachHang = payload.get("tenKhachHang") != null ? payload.get("tenKhachHang").toString() : null;
+            
+            BigDecimal phiShip = payload.get("phiShip") != null ? new BigDecimal(payload.get("phiShip").toString()) : BigDecimal.ZERO;
+            String sdtNhan = payload.get("sdtNhan") != null ? payload.get("sdtNhan").toString() : null;
+            String diaChiGiao = payload.get("diaChiGiao") != null ? payload.get("diaChiGiao").toString() : null;
+            Long idPhieuGiamGia = (payload.get("idPhieuGiamGia") != null && !payload.get("idPhieuGiamGia").toString().trim().isEmpty())
+                    ? Long.valueOf(payload.get("idPhieuGiamGia").toString())
+                    : null;
+            
+            HoaDon hd = banHangService.thanhToan(id, hinhThucThanhToan, tienKhachDua, ghiChu, tenKhachHang, phiShip, sdtNhan, diaChiGiao, idPhieuGiamGia);
+            return ResponseEntity.ok(mapHoaDon(hd));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // --- 4. Khách hàng & Phiếu giảm giá ---
+
+    @GetMapping("/khach-hang")
+    public ResponseEntity<?> getKhachHang(@RequestParam(required = false, defaultValue = "") String keyword) {
+        return ResponseEntity.ok(banHangService.getDanhSachKhachHang(keyword));
+    }
+
+    @PutMapping("/hoa-don/{id}/khach-hang")
+    public ResponseEntity<?> capNhatKhachHang(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        try {
+            Long idKhachHang = (payload.get("idKhachHang") != null) ? Long.valueOf(payload.get("idKhachHang").toString()) : null;
+            HoaDon hd = banHangService.capNhatKhachHang(id, idKhachHang);
+            return ResponseEntity.ok(mapHoaDon(hd));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/phieu-giam-gia")
+    public ResponseEntity<?> getPhieuGiamGia() {
+        List<com.example.be.entity.PhieuGiamGia> list = phieuGiamGiaService.getAvailableVouchers();
+        List<Map<String, Object>> result = list.stream()
+                .map(p -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", p.getId());
+                    map.put("maVoucher", p.getMaVoucher());
+                    map.put("tenVoucher", p.getTenVoucher());
+                    map.put("loaiGiamGia", p.getLoaiGiamGia());
+                    map.put("giaTriGiam", p.getGiaTriGiam());
+                    map.put("donToiThieu", p.getDonToiThieu());
+                    map.put("giamToiDa", p.getGiamToiDa());
+                    return map;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/hoa-don/{id}/phieu-giam-gia")
+    public ResponseEntity<?> capNhatPhieuGiamGia(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        try {
+            Long idPhieu = (payload.get("idPhieuGiamGia") != null) ? Long.valueOf(payload.get("idPhieuGiamGia").toString()) : null;
+            HoaDon hd = banHangService.capNhatPhieuGiamGia(id, idPhieu);
+            return ResponseEntity.ok(mapHoaDon(hd));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/hoa-don/{id}/giao-hang")
+    public ResponseEntity<?> capNhatGiaoHang(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        try {
+            Boolean isGiaoHang = payload.get("isGiaoHang") != null ? Boolean.valueOf(payload.get("isGiaoHang").toString()) : false;
+            String tenNguoiNhan = payload.get("tenNguoiNhan") != null ? payload.get("tenNguoiNhan").toString() : null;
+            String sdtNhan = payload.get("sdtNhan") != null ? payload.get("sdtNhan").toString() : null;
+            String diaChiGiao = payload.get("diaChiGiao") != null ? payload.get("diaChiGiao").toString() : null;
+            BigDecimal phiShip = payload.get("phiShip") != null && !payload.get("phiShip").toString().trim().isEmpty()
+                    ? new BigDecimal(payload.get("phiShip").toString())
+                    : BigDecimal.ZERO;
+            HoaDon hd = banHangService.capNhatGiaoHang(id, isGiaoHang, tenNguoiNhan, sdtNhan, diaChiGiao, phiShip);
+            return ResponseEntity.ok(mapHoaDon(hd));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // --- Helpers ---
+
+    private Map<String, Object> mapHoaDon(HoaDon hd) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", hd.getId());
+        map.put("maHoaDon", hd.getMaHoaDon());
+        map.put("tongTienHang", hd.getTongTienHang());
+        map.put("tienGiamGia", hd.getTienGiamGia());
+        map.put("tongTienThanhToan", hd.getTongTienThanhToan());
+        map.put("tenNguoiNhan", hd.getTenNguoiNhan());
+        map.put("sdtNhan", hd.getSdtNguoiNhan());
+        map.put("diaChiGiao", hd.getDiaChiNhan());
+        map.put("phiShip", hd.getPhiShip());
+        
+        if (hd.getKhachHang() != null) {
+            Map<String, Object> khMap = new HashMap<>();
+            khMap.put("id", hd.getKhachHang().getId());
+            khMap.put("hoTen", hd.getKhachHang().getHoTen());
+            khMap.put("soDienThoai", hd.getKhachHang().getSoDienThoai());
+            map.put("khachHang", khMap);
+        }
+
+        if (hd.getPhieuGiamGia() != null) {
+            Map<String, Object> pggMap = new HashMap<>();
+            pggMap.put("id", hd.getPhieuGiamGia().getId());
+            pggMap.put("maVoucher", hd.getPhieuGiamGia().getMaVoucher());
+            pggMap.put("tenVoucher", hd.getPhieuGiamGia().getTenVoucher());
+            pggMap.put("loaiGiamGia", hd.getPhieuGiamGia().getLoaiGiamGia());
+            pggMap.put("giaTriGiam", hd.getPhieuGiamGia().getGiaTriGiam());
+            pggMap.put("donToiThieu", hd.getPhieuGiamGia().getDonToiThieu());
+            pggMap.put("giamToiDa", hd.getPhieuGiamGia().getGiamToiDa());
+            map.put("phieuGiamGia", pggMap);
+        }
+        return map;
+    }
+}

@@ -1,0 +1,1083 @@
+/* ==========================================================================
+   VShoes Admin Common Design System (admin-common.css)
+   Thư viện CSS dùng chung chuẩn hóa giao diện toàn bộ Admin
+   (Font chữ, Kiểu bảng, Màu sắc, Phân trang, Nút bấm & Thẻ trạng thái)
+   ========================================================================== */
+@import url('/css/global-typography.css?v=2.0');
+
+/* 1. Global Reset & Theme Variables */
+:root {
+    --admin-primary: #0f2d4a;
+    --admin-accent: #00adef;
+    --admin-gradient: linear-gradient(135deg, #0f2d4a 0%, #00adef 100%);
+    --admin-gradient-hover: linear-gradient(135deg, #13395d 0%, #00bcfd 100%);
+    --admin-bg: #f8fafc;
+    --admin-bg-gradient: radial-gradient(circle at top right, rgba(0, 173, 239, 0.08) 0%, rgba(15, 45, 74, 0.05) 50%, rgba(15, 23, 42, 0.02) 100%);
+    --admin-card-bg: #ffffff;
+    --admin-text-main: #1e293b;
+    --admin-text-sub: #475569;
+    --admin-text-muted: #64748b;
+    --admin-border: #e2e8f0;
+    --admin-border-light: #f1f5f9;
+    
+    /* Status Colors */
+    --status-success-bg: #ecfdf5;
+    --status-success-text: #15803d;
+    --status-success-border: #bbf7d0;
+    
+    --status-warning-bg: #fffbeb;
+    --status-warning-text: #b45309;
+    --status-warning-border: #fde68a;
+    
+    --status-danger-bg: #fef2f2;
+    --status-danger-text: #b91c1c;
+    --status-danger-border: #fecaca;
+    
+    --status-info-bg: #eff6ff;
+    --status-info-text: #1d4ed8;
+    --status-info-border: #bfdbfe;
+    
+    --status-neutral-bg: #f8fafc;
+    --status-neutral-text: #64748b;
+    --status-neutral-border: #cbd5e1;
+}
+
+body, html {
+    font-family: 'Plus Jakarta Sans', 'Be Vietnam Pro', 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    background-color: var(--admin-bg) !important;
+    color: var(--admin-text-main) !important;
+    margin: 0;
+    padding: 0;
+}
+
+.app-container {
+    background: var(--admin-bg-gradient) !important;
+    min-height: 100vh;
+}
+
+/* 2. Header & Screen Title */
+.screen-header,
+.page-header {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.screen-title,
+.page-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: var(--admin-text-main) !important;
+    margin: 0 !important;
+}
+
+/* 3. Tab Panels Animation */
+.tab-panel {
+    display: none;
+    animation: adminFadeIn 0.25s ease-out;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+@keyframes adminFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 4. Filter Cards & Controls */
+.filter-card,
+.filter-section-card,
+.card-filter,
+.white-card.filter-card {
+    background-color: var(--admin-card-bg) !important;
+    border-radius: 12px !important;
+    padding: 20px 24px !important;
+    border: 1px solid var(--admin-border) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+    margin-bottom: 20px !important;
+}
+
+.filter-section-title,
+.filter-title {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: var(--admin-text-sub) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin-top: 0 !important;
+    margin-bottom: 16px !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fi-col, .form-group, .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fi-label, .form-group label, .filter-group label, .form-label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--admin-text-sub) !important;
+    margin-bottom: 2px !important;
+}
+
+.fi-input, .fi-select, .input-control, .form-control, .form-select, .custom-input {
+    width: 100%;
+    height: 40px !important;
+    padding: 8px 12px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    font-size: 13.5px !important;
+    color: var(--admin-text-main) !important;
+    background-color: #ffffff !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.fi-input:focus, .fi-select:focus, .input-control:focus, .form-control:focus, .form-select:focus, .custom-input:focus {
+    border-color: var(--admin-accent) !important;
+    box-shadow: 0 0 0 3px rgba(0, 173, 239, 0.15) !important;
+}
+
+.fi-search-wrap,
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.fi-search-wrap .fi-search-icon,
+.fi-search-wrap i,
+.input-with-icon i {
+    position: absolute;
+    left: 12px;
+    width: 16px;
+    height: 16px;
+    color: var(--admin-text-muted);
+    pointer-events: none;
+}
+
+.fi-search-wrap .fi-input,
+.fi-search-wrap .form-control,
+.input-with-icon .custom-input {
+    padding-left: 36px !important;
+}
+
+/* Nút Làm mới bộ lọc dạng icon vuông (Filter Grid Reset Button) */
+.fi-reset-btn, .refresh-btn, .btn-refresh, .btn-icon-reset {
+    width: 38px !important;
+    min-width: 38px !important;
+    height: 38px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #00adef !important;
+    background-color: #ffffff !important;
+    color: #0284c7 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    text-decoration: none !important;
+    vertical-align: middle !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+    flex-shrink: 0;
+}
+
+.fi-reset-btn:hover, .refresh-btn:hover, .btn-refresh:hover, .btn-icon-reset:hover {
+    background-color: #e0f2fe !important;
+    color: #0369a1 !important;
+    border-color: #0284c7 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(0, 173, 239, 0.25) !important;
+}
+
+.fi-reset-btn svg, .fi-reset-btn i,
+.refresh-btn svg, .refresh-btn i,
+.btn-refresh svg, .btn-refresh i {
+    width: 16px !important;
+    height: 16px !important;
+    color: inherit !important;
+}
+
+/* Status Filter Toggle Group */
+.status-options {
+    display: flex;
+    gap: 8px;
+}
+
+.status-btn {
+    padding: 0 16px;
+    height: 38px;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background-color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--admin-text-sub);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-btn.active {
+    background: var(--admin-gradient) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 10px rgba(0, 173, 239, 0.2) !important;
+    font-weight: 600 !important;
+}
+
+.status-btn:hover:not(.active) {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+/* 5. Main Content Cards */
+.admin-card,
+.customer-card,
+.content-card,
+.card-table,
+.white-card {
+    background-color: var(--admin-card-bg) !important;
+    border-radius: 12px !important;
+    border: 1px solid var(--admin-border) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+    overflow: hidden;
+}
+
+.card-title-table {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: var(--admin-text-main) !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 6. Buttons System */
+.btn-admin-primary,
+.btn-primary-action,
+.btn-add-product,
+.btn-update-product,
+.btn-search,
+.fi-search-btn,
+.btn-filter-search,
+button.btn-primary:not(.btn-outline-primary) {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 0 18px !important;
+    height: 38px !important;
+    border-radius: 8px !important;
+    background: var(--admin-gradient) !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 4px 10px rgba(0, 173, 239, 0.22) !important;
+    text-decoration: none !important;
+}
+
+.btn-admin-primary:hover,
+.btn-primary-action:hover,
+.btn-add-product:hover,
+.btn-update-product:hover,
+.btn-search:hover,
+.fi-search-btn:hover,
+.btn-filter-search:hover,
+button.btn-primary:not(.btn-outline-primary):hover {
+    background: var(--admin-gradient-hover) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 14px rgba(0, 173, 239, 0.35) !important;
+    color: #ffffff !important;
+}
+
+/* Export Excel Buttons (Unified Green Palette) */
+.btn-export-excel,
+.btn-excel,
+.btn-export,
+#btnExportExcel,
+.btn-outline-excel,
+a.btn-export-excel,
+a.btn-excel {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 0 16px !important;
+    height: 38px !important;
+    background: #ffffff !important;
+    color: #059669 !important;
+    border: 1.5px solid #10b981 !important;
+    border-radius: 8px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 1px 3px rgba(16, 185, 129, 0.1) !important;
+    text-decoration: none !important;
+}
+
+.btn-export-excel:hover,
+.btn-excel:hover,
+.btn-export:hover,
+#btnExportExcel:hover,
+.btn-outline-excel:hover,
+a.btn-export-excel:hover,
+a.btn-excel:hover {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    border-color: #059669 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+.btn-export-excel svg,
+.btn-export-excel i,
+.btn-excel svg,
+.btn-excel i,
+#btnExportExcel svg,
+#btnExportExcel i {
+    width: 16px !important;
+    height: 16px !important;
+    color: inherit !important;
+}
+
+/* Import Excel Buttons (Unified Teal Palette) */
+.btn-import-excel,
+.btn-import,
+#btnImportExcel,
+.btn-outline-import-excel,
+a.btn-import-excel,
+a.btn-import {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 0 16px !important;
+    height: 38px !important;
+    background: #ffffff !important;
+    color: #0d9488 !important;
+    border: 1.5px solid #14b8a6 !important;
+    border-radius: 8px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 1px 3px rgba(20, 184, 166, 0.1) !important;
+    text-decoration: none !important;
+}
+
+.btn-import-excel:hover,
+.btn-import:hover,
+#btnImportExcel:hover,
+.btn-outline-import-excel:hover,
+a.btn-import-excel:hover,
+a.btn-import:hover {
+    background: #f0fdfa !important;
+    color: #0f766e !important;
+    border-color: #0d9488 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.25) !important;
+}
+
+.btn-import-excel svg,
+.btn-import-excel i,
+.btn-import svg,
+.btn-import i,
+#btnImportExcel svg,
+#btnImportExcel i {
+    width: 16px !important;
+    height: 16px !important;
+    color: inherit !important;
+}
+
+/* Nút Làm mới bộ lọc có chữ & Outline (Text Filter Reset Buttons) */
+.btn-admin-outline,
+.btn-outline-info,
+.btn-reset,
+.btn-filter-reset {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 0 16px !important;
+    height: 38px !important;
+    background: #ffffff !important;
+    color: #0284c7 !important;
+    border: 1.5px solid #00adef !important;
+    border-radius: 8px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    text-decoration: none !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+.btn-admin-outline:hover,
+.btn-outline-info:hover,
+.btn-reset:hover,
+.btn-filter-reset:hover {
+    background: #e0f2fe !important;
+    color: #0369a1 !important;
+    border-color: #0284c7 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 10px rgba(0, 173, 239, 0.2) !important;
+}
+
+.btn-admin-outline svg,
+.btn-admin-outline i,
+.btn-reset svg,
+.btn-reset i,
+.btn-filter-reset svg,
+.btn-filter-reset i {
+    width: 16px !important;
+    height: 16px !important;
+    color: inherit !important;
+}
+
+/* Action Icon Buttons */
+.btn-actions-cell {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+}
+
+.action-icon-btn,
+.action-btn,
+.btn-icon-table,
+.btn-brown-outline-sm,
+.dg-icon-btn-view,
+.dg-btn-action-view,
+.addr-action-btn {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+    border: 1px solid transparent !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+    margin: 0 2px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+    line-height: 1 !important;
+}
+
+.action-icon-btn svg,
+.action-icon-btn i,
+.action-btn svg,
+.action-btn i,
+.dg-icon-btn-view svg,
+.dg-icon-btn-view i,
+.dg-btn-action-view svg,
+.dg-btn-action-view i,
+.addr-action-btn svg,
+.addr-action-btn i {
+    width: 16px !important;
+    height: 16px !important;
+    color: inherit !important;
+    display: inline-block !important;
+}
+
+/* Xem / Chi tiết (Xanh lam) */
+.action-icon-btn.view,
+.action-btn.btn-view,
+.btn-action-view,
+.dg-icon-btn-view,
+.dg-btn-action-view,
+.action-icon-btn.schedule,
+.addr-action-btn.primary-text {
+    color: #0284c7 !important;
+    background-color: #e0f2fe !important;
+    border: 1px solid #bae6fd !important;
+}
+
+.action-icon-btn.view:hover,
+.action-btn.btn-view:hover,
+.btn-action-view:hover,
+.dg-icon-btn-view:hover,
+.dg-btn-action-view:hover,
+.action-icon-btn.schedule:hover,
+.addr-action-btn.primary-text:hover {
+    background-color: #0284c7 !important;
+    color: #ffffff !important;
+    border-color: #0284c7 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(2, 132, 199, 0.35) !important;
+}
+
+/* Chỉnh sửa (Vàng hổ phách) */
+.action-icon-btn.edit,
+.action-btn.btn-edit,
+.btn-action-edit,
+.btn-brown-outline-sm,
+.addr-action-btn.edit-text {
+    color: #b45309 !important;
+    background-color: #fef9c3 !important;
+    border: 1px solid #fde68a !important;
+}
+
+.action-icon-btn.edit:hover,
+.action-btn.btn-edit:hover,
+.btn-action-edit:hover,
+.btn-brown-outline-sm:hover,
+.addr-action-btn.edit-text:hover {
+    background-color: #f59e0b !important;
+    color: #ffffff !important;
+    border-color: #d97706 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(245, 158, 11, 0.35) !important;
+}
+
+/* Địa chỉ (Xanh lá cây) */
+.action-icon-btn.address,
+.action-btn.btn-address,
+.btn-action-address {
+    color: #15803d !important;
+    background-color: #dcfce7 !important;
+    border: 1px solid #bbf7d0 !important;
+}
+
+.action-icon-btn.address:hover,
+.action-btn.btn-address:hover,
+.btn-action-address:hover {
+    background-color: #16a34a !important;
+    color: #ffffff !important;
+    border-color: #16a34a !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.35) !important;
+}
+
+/* Nút chuyển đổi trạng thái dạng nút bấm */
+.action-icon-btn.toggle,
+.action-btn.btn-toggle {
+    color: #b45309 !important;
+    background-color: #fef3c7 !important;
+    border: 1px solid #fde68a !important;
+}
+
+.action-icon-btn.toggle:hover,
+.action-btn.btn-toggle:hover {
+    background-color: #f59e0b !important;
+    color: #ffffff !important;
+    border-color: #d97706 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(245, 158, 11, 0.35) !important;
+}
+
+/* Xóa (Đỏ) */
+.action-icon-btn.delete,
+.action-btn.btn-delete,
+.btn-action-delete,
+.addr-action-btn.danger-text {
+    color: #dc2626 !important;
+    background-color: #fee2e2 !important;
+    border: 1px solid #fecaca !important;
+}
+
+.action-icon-btn.delete:hover,
+.action-btn.btn-delete:hover,
+.btn-action-delete:hover,
+.addr-action-btn.danger-text:hover {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
+    border-color: #b91c1c !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.35) !important;
+}
+
+/* 7. Unified Table System (ĐỒNG BỘ KIỂU BẢNG) */
+.custom-table-container,
+.table-responsive,
+.dg-table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 0;
+    border: none;
+}
+
+table,
+.table,
+.customer-table,
+.custom-table,
+.brown-table,
+.dg-table,
+.attribute-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 13.5px !important;
+    text-align: left !important;
+    margin-bottom: 0 !important;
+}
+
+table thead th,
+.table thead th,
+.customer-table th,
+.custom-table thead th,
+.brown-table thead th,
+.dg-table thead th {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 13px 16px !important;
+    border-bottom: 1px solid var(--admin-border) !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+}
+
+table tbody td,
+.table tbody td,
+.customer-table td,
+.custom-table tbody td,
+.brown-table tbody td,
+.dg-table tbody td {
+    padding: 13px 16px !important;
+    border-bottom: 1px solid var(--admin-border-light) !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    color: var(--admin-text-main) !important;
+    vertical-align: middle !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+}
+
+table tbody tr,
+.table tbody tr,
+.customer-table tbody tr,
+.custom-table tbody tr,
+.brown-table tbody tr,
+.dg-table tbody tr {
+    transition: background-color 0.15s ease !important;
+}
+
+table tbody tr:hover,
+.table tbody tr:hover,
+.customer-table tbody tr:hover,
+.custom-table tbody tr:hover,
+.brown-table tbody tr:hover,
+.dg-table tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+
+/* 8. Unified Status Badges System (ĐỒNG BỘ MÀU SẮC THẺ TRẠNG THÁI) */
+.app-badge,
+.badge,
+.status-badge,
+.badge-status,
+.status-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    padding: 4px 12px !important;
+    border-radius: 50px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+}
+
+/* Hoạt động / Đang kinh doanh / Thành công */
+.app-badge-success,
+.badge-active,
+.badge-status-active,
+.badge-success,
+.status-badge.active,
+.status-active {
+    background-color: var(--status-success-bg) !important;
+    color: var(--status-success-text) !important;
+    border: 1px solid var(--status-success-border) !important;
+}
+
+/* Cảnh báo / Đang xử lý / Sắp diễn ra */
+.app-badge-warning,
+.badge-pending,
+.badge-status-pending,
+.badge-warning {
+    background-color: var(--status-warning-bg) !important;
+    color: var(--status-warning-text) !important;
+    border: 1px solid var(--status-warning-border) !important;
+}
+
+/* Ngừng hoạt động / Hết hạn / Ngừng kinh doanh */
+.app-badge-danger,
+.badge-expired,
+.badge-status-inactive,
+.badge-status-expired,
+.badge-danger,
+.status-badge.inactive,
+.status-inactive {
+    background-color: var(--status-danger-bg) !important;
+    color: var(--status-danger-text) !important;
+    border: 1px solid var(--status-danger-border) !important;
+}
+
+/* Thông tin / Xanh dương */
+.app-badge-info,
+.badge-info {
+    background-color: var(--status-info-bg) !important;
+    color: var(--status-info-text) !important;
+    border: 1px solid var(--status-info-border) !important;
+}
+
+/* 9. Unified Pagination System (ĐỒNG BỘ PHÂN TRANG) */
+.table-footer,
+.pagination-wrapper,
+.pagination-container,
+.dg-pagination-wrap {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 16px 20px !important;
+    margin-top: 0 !important;
+    border-top: 1px solid var(--admin-border-light) !important;
+    background-color: var(--admin-card-bg) !important;
+}
+
+.total-count,
+.pagination-info,
+.dg-pagination-wrap > div:first-child {
+    font-size: 13.5px !important;
+    color: var(--admin-text-muted) !important;
+    font-weight: 500 !important;
+}
+
+.total-count strong,
+.pagination-info strong,
+.total-count span,
+.pagination-info span {
+    color: var(--admin-text-main) !important;
+    font-weight: 700 !important;
+}
+
+.pagination,
+.pagination-nav,
+.pagination-controls,
+.pagination-controls-wrapper,
+#page-numbers-container,
+#emp-pagination-controls,
+.dg-pagination-wrap > div:last-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-bottom: 0 !important;
+    padding-left: 0 !important;
+    list-style: none !important;
+}
+
+/* Unified Page Buttons: 34x34px, rounded-8px, clean border, smooth lift */
+.page-btn,
+.btn-page,
+.dg-page-btn,
+.page-link,
+.btn-page-arrow,
+.page-number-box {
+    min-width: 34px !important;
+    height: 34px !important;
+    padding: 0 10px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--admin-border) !important;
+    background-color: #ffffff !important;
+    color: var(--admin-text-sub) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+    line-height: 1 !important;
+}
+
+.page-btn:hover:not(.disabled):not(:disabled):not(.active),
+.btn-page:hover:not(:disabled):not(.active),
+.dg-page-btn:hover:not(:disabled):not(.active),
+.btn-page-arrow:hover:not(:disabled),
+.page-link:hover:not(:disabled) {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: var(--admin-primary) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06) !important;
+}
+
+.page-btn.active,
+.btn-page.active,
+.dg-page-btn.active,
+.page-number-box,
+.page-item.active .page-link {
+    background: var(--admin-gradient) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    font-weight: 700 !important;
+    box-shadow: 0 3px 8px rgba(0, 173, 239, 0.3) !important;
+}
+
+.page-btn.disabled,
+.page-btn:disabled,
+.btn-page:disabled,
+.dg-page-btn:disabled,
+.btn-page-arrow:disabled,
+.page-item.disabled .page-link {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.pagination-label {
+    font-size: 13px !important;
+    color: var(--admin-text-muted) !important;
+    font-weight: 500 !important;
+    margin: 0 4px !important;
+}
+
+.page-size-selector select,
+select.page-size-select,
+select.form-select-sm {
+    height: 34px !important;
+    padding: 0 26px 0 10px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--admin-border) !important;
+    background-color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--admin-text-main) !important;
+    outline: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.page-size-selector select:hover,
+select.page-size-select:hover,
+select.form-select-sm:hover {
+    border-color: #00adef !important;
+}
+
+/* 10. Switch Toggle Controls (iOS Style) */
+.switch-control,
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 22px;
+    vertical-align: middle;
+    margin: 0;
+    cursor: pointer;
+}
+
+.switch-control input,
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.switch-slider,
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 22px;
+}
+
+.switch-slider:before,
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.switch-control:hover .switch-slider,
+.toggle-switch:hover .toggle-slider {
+    background-color: #94a3b8;
+}
+
+.switch-control input:checked + .switch-slider,
+.toggle-switch input:checked + .toggle-slider {
+    background: var(--admin-gradient) !important;
+    box-shadow: 0 2px 8px rgba(0, 173, 239, 0.25);
+}
+
+.switch-control input:checked + .switch-slider:before,
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* 11. Unified SweetAlert2 Modal & Toast Styling */
+.swal2-popup {
+    font-family: inherit !important;
+    border-radius: 14px !important;
+    padding: 24px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.swal2-toast {
+    font-family: inherit !important;
+    border-radius: 10px !important;
+    padding: 12px 16px !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid var(--admin-border) !important;
+}
+
+.swal2-toast .swal2-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--admin-text-main) !important;
+}
+
+.swal2-toast .swal2-html-container {
+    font-size: 13px !important;
+    color: var(--admin-text-sub) !important;
+}
+
+.swal2-actions {
+    gap: 10px !important;
+}
+
+.swal2-styled.swal2-confirm,
+.swal2-styled.swal2-cancel {
+    border-radius: 8px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    padding: 9px 20px !important;
+    box-shadow: none !important;
+}
+
+/* 12. Unified Back Button (.back-link / .btn-back) */
+.back-link, .btn-back {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #0f2d4a !important;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    cursor: pointer !important;
+    padding: 8px 18px !important;
+    border-radius: 8px !important;
+    margin-bottom: 18px !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    line-height: 1.4 !important;
+}
+
+.back-link:hover, .btn-back:hover {
+    background: #f1f5f9 !important;
+    border-color: #00adef !important;
+    color: #00adef !important;
+    transform: translateX(-3px) !important;
+    box-shadow: 0 4px 12px rgba(0, 173, 239, 0.15) !important;
+}
+
+.back-link svg, .back-link i, .btn-back svg, .btn-back i {
+    width: 18px !important;
+    height: 18px !important;
+    transition: transform 0.2s ease !important;
+    vertical-align: middle !important;
+}
+
+.back-link:hover svg, .back-link:hover i, .btn-back:hover svg, .btn-back:hover i {
+    transform: translateX(-3px) !important;
+}
+
+/* 13. Unified Admin Breadcrumb */
+.admin-breadcrumb {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 13.5px !important;
+    color: #64748b !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.admin-breadcrumb .breadcrumb-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+}
+
+.admin-breadcrumb .breadcrumb-item a {
+    color: #64748b !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: color 0.15s ease !important;
+}
+
+.admin-breadcrumb .breadcrumb-item a:hover {
+    color: #00adef !important;
+}
+
+.admin-breadcrumb .breadcrumb-separator {
+    color: #94a3b8 !important;
+    display: flex !important;
+    align-items: center !important;
+    font-size: 12px !important;
+}
+
+.admin-breadcrumb .breadcrumb-item.active {
+    color: #0f2d4a !important;
+    font-weight: 700 !important;
+    background: #f1f5f9 !important;
+    padding: 3px 10px !important;
+    border-radius: 6px !important;
+}
+
